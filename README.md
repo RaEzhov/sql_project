@@ -72,3 +72,32 @@ Second figure is manufacturer
 	7 - Seasonic  
 	8 - Thermaltake
 Next figures just numbers in order  
+  
+Sku of solid state drive (7XXX)  
+Second figure is manufacturer  
+	1 - Kingston  
+	2 - Samsung   
+Third figure is type (2.5 or m.2)  
+	 1 - 2.5  
+	 2 - m.2  
+Next figures just numbers in order  
+
+Sku of solid state drive (8XXX)  
+Second figure is manufacturer  
+	1 - Seagate  
+	2 - WD  
+Next figures just numbers in order  
+  
+Sku of case (9XXX)  
+Second figure is manufacturer  
+	1 - AeroCool  
+	2 - be quiet!  
+	3 - CoolerMaster  
+	4 - Corsair  
+	5 - Cougar  
+	6 - DEEPCOOL  
+	7 - Fractal Design  
+	6 - NZXT  
+	9 - Thermaltake  
+Next figures just numbers in order  
+  
