@@ -51,3 +51,24 @@ Second figure is manufacturer
 	6 - Samsung  
 Next figures just numbers in order  
   
+Sku of cooling (5XXX)  
+Second figure is manufacturer  
+	1 - AeroCool  
+	2 - Arctic Cooling  
+	3 - be quiet!  
+	4 - CoolerMaster  
+	5 - DEEPCOOL  
+	6 - Noctua
+Next figures just numbers in order  
+  
+Sku of power supply (6XXX)  
+Second figure is manufacturer  
+	1 - be quiet!  
+	2 - Corsair  
+	3 - Cougar  
+	4 - DEEPCOOL  
+	5 - EVGA    
+	6 - FSP  
+	7 - Seasonic  
+	8 - Thermaltake
+Next figures just numbers in order  
