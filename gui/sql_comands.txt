@@ -1,0 +1,9 @@
+CREATE PROCEDURE insert_into_processor(sku_arg INT, brand_arg VARCHAR(50), model_arg VARCHAR(50), socket_arg VARCHAR(50), number_of_cores_arg INT,
+						  number_of_threads_arg INT, integrated_graphics_processor_arg VARCHAR(50), tdp_arg INT, price_arg INT, amount_arg INT)
+LANGUAGE SQL
+AS $$
+	INSERT INTO processor
+	VALUES
+	(sku_arg, brand_arg, model_arg, socket_arg, number_of_cores_arg, number_of_threads_arg, integrated_graphics_processor_arg, tdp_arg, price_arg, amount_arg);
+$$;
+
