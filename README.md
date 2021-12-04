@@ -101,3 +101,7 @@ Second figure is manufacturer
 	9 - Thermaltake  
 Next figures just numbers in order  
   
+How to add new product  
+Press to "New product" button. Enter sku.  
+if this sku already exists then user enter amont of new products and this number adds to old value.  
+if this slu is not exists then user enter all information about product and this cortege adds to table.  
