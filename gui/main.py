@@ -203,7 +203,7 @@ class App(Tk):
 
         _Session = sessionmaker(bind=my_engine)
         session = _Session()
-        data = session.query(func.return_proc()).all()
+        data = session.query(func.return_motherboard()).all()
         output = []
         columns = ['SKU', 'Brand', 'Model', 'Socket', 'Chipset', 'RAM type',
                    'RAM slots', 'Form-factor', 'M.2 slots', 'Price', 'Amount']
@@ -222,7 +222,7 @@ class App(Tk):
     def select_gpu(self):
         _Session = sessionmaker(bind=my_engine)
         session = _Session()
-        data = session.query(func.return_proc()).all()
+        data = session.query(func.return_gpu()).all()
         output = []
         columns = ['SKU', 'Chip', 'Brand', 'Model', 'Memory capacity', 'Memory type',
                    'Length', 'Price', 'Amount']
@@ -239,27 +239,122 @@ class App(Tk):
         self.place_output_window(output_str)
 
     def select_ram(self):
-        pass
+        _Session = sessionmaker(bind=my_engine)
+        session = _Session()
+        data = session.query(func.return_ram()).all()
+        output = []
+        columns = ['SKU', 'Brand', 'Model', 'Type', 'Capacity',
+                   'Frequency', 'Modules', 'Price', 'Amount']
+        output.append(columns)
+        for el in data:
+            for el1 in el:
+                output.append(list(el1[1:-1].replace('"', '').split(',')))
+        output_str = ''
+        add_spaces(output)
+        for i in output:
+            for j in i:
+                output_str += j + '|'
+            output_str += '\n'
+        self.place_output_window(output_str)
 
     def select_cooling(self):
-        pass
+        _Session = sessionmaker(bind=my_engine)
+        session = _Session()
+        data = session.query(func.return_cool()).all()
+        output = []
+        columns = ['SKU', 'Brand', 'Model', 'Socket', 'TDP',
+                   'Price', 'Amount']
+        output.append(columns)
+        for el in data:
+            for el1 in el:
+                output.append(list(el1[1:-1].replace('"', '').split(',')))
+        output_str = ''
+        add_spaces(output)
+        for i in output:
+            for j in i:
+                output_str += j + '|'
+            output_str += '\n'
+        self.place_output_window(output_str)
 
     def select_power_supply(self):
-        pass
+        _Session = sessionmaker(bind=my_engine)
+        session = _Session()
+        data = session.query(func.return_power_supply()).all()
+        output = []
+        columns = ['SKU', 'Brand', 'Model', 'Power', 'Price', 'Amount']
+        output.append(columns)
+        for el in data:
+            for el1 in el:
+                output.append(list(el1[1:-1].replace('"', '').split(',')))
+        output_str = ''
+        add_spaces(output)
+        for i in output:
+            for j in i:
+                output_str += j + '|'
+            output_str += '\n'
+        self.place_output_window(output_str)
 
     def select_ssd(self):
-        pass
+        _Session = sessionmaker(bind=my_engine)
+        session = _Session()
+        data = session.query(func.return_ssd()).all()
+        output = []
+        columns = ['SKU',  'Brand', 'Model', 'Capacity', 'Form factor',
+                   'Price', 'Amount']
+        output.append(columns)
+        for el in data:
+            for el1 in el:
+                output.append(list(el1[1:-1].replace('"', '').split(',')))
+        output_str = ''
+        add_spaces(output)
+        for i in output:
+            for j in i:
+                output_str += j + '|'
+            output_str += '\n'
+        self.place_output_window(output_str)
 
     def select_hdd(self):
-        pass
+        _Session = sessionmaker(bind=my_engine)
+        session = _Session()
+        data = session.query(func.return_hdd()).all()
+        output = []
+        columns = ['SKU', 'Brand', 'Model', 'Capacity','Rotation speed', 'Form factor',
+                   'Price', 'Amount']
+        output.append(columns)
+        for el in data:
+            for el1 in el:
+                output.append(list(el1[1:-1].replace('"', '').split(',')))
+        output_str = ''
+        add_spaces(output)
+        for i in output:
+            for j in i:
+                output_str += j + '|'
+            output_str += '\n'
+        self.place_output_window(output_str)
 
     def select_case(self):
-        pass
+        _Session = sessionmaker(bind=my_engine)
+        session = _Session()
+        data = session.query(func.return_case()).all()
+        output = []
+        columns = ['SKU', 'Brand', 'Model', 'Form factor', 'GPU lengh',
+                   'Price', 'Amount']
+        output.append(columns)
+        for el in data:
+            for el1 in el:
+                output.append(list(el1[1:-1].replace('"', '').split(',')))
+        output_str = ''
+        add_spaces(output)
+        for i in output:
+            for j in i:
+                output_str += j + '|'
+            output_str += '\n'
+        self.place_output_window(output_str)
 
     def select_order(self):
         _Session = sessionmaker(bind=my_engine)
         session = _Session()
-        data = session.query(func.return_proc()).all()
+        data = session.query(func.return_order()).all()
         output = []
         columns = ['ID', 'Customer phone', 'Processor', 'Cooling', 'RAM', 'RAM amt',
                    'Motherboard', 'GPU', 'HDD', 'SSD', 'Power supply', 'Case', 'Commentaries', 'Status', 'Price']
@@ -276,7 +371,23 @@ class App(Tk):
         self.place_output_window(output_str)
 
     def select_customer(self):
-        pass
+        _Session = sessionmaker(bind=my_engine)
+        session = _Session()
+        data = session.query(func.return_customer()).all()
+        output = []
+        columns = ['Phone',
+                   'First name', 'Last name']
+        output.append(columns)
+        for el in data:
+            for el1 in el:
+                output.append(list(el1[1:-1].replace('"', '').split(',')))
+        output_str = ''
+        add_spaces(output)
+        for i in output:
+            for j in i:
+                output_str += j + '|'
+            output_str += '\n'
+        self.place_output_window(output_str)
 
     def place_output_window(self, info):
         self.info_output = Text(font=default_font, width=154, height=20, bg=default_info_win_color,
