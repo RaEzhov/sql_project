@@ -335,7 +335,7 @@ class App(Tk):
     def select_case(self):
         _Session = sessionmaker(bind=my_engine)
         session = _Session()
-        data = session.query(func.return_case()).all()
+        data = session.query(func.return_case_pc()).all()
         output = []
         columns = ['SKU', 'Brand', 'Model', 'Form factor', 'GPU lengh',
                    'Price', 'Amount']
@@ -354,7 +354,7 @@ class App(Tk):
     def select_order(self):
         _Session = sessionmaker(bind=my_engine)
         session = _Session()
-        data = session.query(func.return_order()).all()
+        data = session.query(func.return_order_customer()).all()
         output = []
         columns = ['ID', 'Customer phone', 'Processor', 'Cooling', 'RAM', 'RAM amt',
                    'Motherboard', 'GPU', 'HDD', 'SSD', 'Power supply', 'Case', 'Commentaries', 'Status', 'Price']
@@ -400,8 +400,6 @@ class App(Tk):
         for button in self.buttons_list:
             button.place_forget()
         self.buttons_list = []
-        # self.b1.place(x=930, y=20)
-        # self.b2.place(x=930, y=120)
         self.show_db_menu_button.place(x=20, y=520)
         self.buttons_list.append(self.show_db_menu_button)
         self.new_order_button.place(x=20, y=620)
@@ -410,7 +408,6 @@ class App(Tk):
         self.buttons_list.append(self.actions_with_db_button)
         self.exit_button.place(x=1120, y=620)
         self.buttons_list.append(self.exit_button)
-        # self.b7.place(x=1110, y=520)
         self.background_label.place(x=0, y=0, relwidth=1, relheight=1)
         self.place_output_window('')
         self.button_background.place(x=0, y=450)
