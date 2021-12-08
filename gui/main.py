@@ -9,7 +9,7 @@ from sqlalchemy_utils import create_database, drop_database, database_exists
 
 default_pg_login = 'user'
 default_pg_passwd = 'password'
-default_pg_host = 'localhost'   # '109.184.67.136'
+default_pg_host = 'localhost'
 default_pg_port = '5432'
 default_pg_db_name = 'pc_shop'
 pg_url = f'postgresql://' \
@@ -21,14 +21,14 @@ default_height = 720
 default_button_font = ('JetBrains Mono', 13)
 default_font = ('JetBrains Mono', 11)
 default_resolution = f'{default_width}x{default_height}'
-default_font_color = '#f6eade'             # 639
-default_active_font_color = '#f6eade'      # 639
-default_button_color = '#e65e56'           # cf0
-default_active_button_color = '#716e6a'    # 9c0
-default_button_bg_color = '#f6eade'        # 90c
-default_info_win_color = '#f6eade'         # 93c
-default_info_font_color = '#000'           # 222
-additional_color_1 = '#4a4a4a'             # 528
+default_font_color = '#f6eade'
+default_active_font_color = '#f6eade'
+default_button_color = '#e65e56'
+default_active_button_color = '#716e6a'
+default_button_bg_color = '#f6eade'
+default_info_win_color = '#f6eade'
+default_info_font_color = '#000'
+additional_color_1 = '#4a4a4a'
 # postgresql connection
 my_engine = 0
 motherboard_form_factor_dict = {'Mini-ITX': 0,
@@ -70,6 +70,55 @@ def connect_db():
 
 def validate(new_value):
     return new_value == "" or new_value.isnumeric()
+
+
+def login_confirm(root, login_entry, passwd_entry, serv_entry, port_entry, db_entry):
+    global default_pg_port, default_pg_login, default_pg_host, default_pg_passwd, default_pg_db_name, pg_url
+    default_pg_login = login_entry.get()
+    default_pg_passwd = passwd_entry.get()
+    default_pg_host = serv_entry.get()
+    default_pg_port = port_entry.get()
+    default_pg_db_name = db_entry.get()
+    pg_url = f'postgresql://' \
+             f'{default_pg_login}:{default_pg_passwd}@{default_pg_host}:{default_pg_port}/{default_pg_db_name}'
+
+    root.destroy()
+
+
+def authorization_window():
+    auth = Tk()
+    auth.geometry('300x400+600+200')
+    auth.overrideredirect(True)
+    auth.title('Login')
+    auth.resizable(width=False, height=False)
+    bg_image = PhotoImage(file='./login_im.gif')
+    background_label = Label(auth, image=bg_image, font=default_font, foreground=default_font_color,
+                             text='Login\n\n\nPassword\n\n\nServer\n\n\nPort\n\n\nDB name\n\n\n\n\n\n',
+                             compound=tkinter.CENTER)
+    background_label.place(x=0, y=0, relwidth=1, relheight=1)
+
+    username_entry = Entry(auth, font=default_font, background=default_info_win_color)
+    username_entry.place(x=60, y=40)
+    password_entry = Entry(auth, font=default_font, background=default_info_win_color, show='*')
+    password_entry.place(x=60, y=97)
+    server_entry = Entry(auth, font=default_font, background=default_info_win_color)
+    server_entry.place(x=60, y=154)
+    port_entry = Entry(auth, font=default_font, background=default_info_win_color)
+    port_entry.place(x=60, y=211)
+    db_name_entry = Entry(auth, font=default_font, background=default_info_win_color)
+    db_name_entry.place(x=60, y=268)
+
+    login_button_image = PhotoImage(file='./login_button_im.gif')
+
+    login_button = Button(auth, text="Confirm",
+                          command=lambda: login_confirm(auth, username_entry, password_entry, server_entry, port_entry,
+                                                        db_name_entry),
+                          border=0, foreground=default_font_color,
+                          image=login_button_image, compound='center', background='#333',
+                          activebackground='#333', highlightthickness=0, bd=0,
+                          activeforeground=default_active_font_color, font=default_button_font)
+    login_button.place(x=50, y=320)
+    auth.mainloop()
 
 
 class About(Toplevel):
@@ -119,8 +168,9 @@ class App(Tk):
                                          compound='center', foreground=default_font_color, border=0,
                                          background=default_button_bg_color, activebackground=default_button_bg_color,
                                          activeforeground=default_active_font_color, font=default_button_font)
-            self.show_db_menu_button = Button(text='Show tables', command=self.show_db_menu, image=self.button_image,
-                                              compound='center', foreground=default_font_color, border=0,
+            self.show_db_menu_button = Button(text='Show tables and SKU search', command=self.show_db_menu,
+                                              image=self.button_image, compound='center',
+                                              foreground=default_font_color, border=0,
                                               background=default_button_bg_color,
                                               activebackground=default_button_bg_color,
                                               activeforeground=default_active_font_color, font=default_button_font)
@@ -204,6 +254,12 @@ class App(Tk):
                                                background=default_button_bg_color,
                                                activebackground=default_button_bg_color,
                                                activeforeground=default_active_font_color, font=default_button_font)
+            self.sku_search_button = Button(text='SKU search', command=self.sku_search,
+                                            image=self.button_image, compound='center',
+                                            foreground=default_font_color, border=0,
+                                            background=default_button_bg_color,
+                                            activebackground=default_button_bg_color,
+                                            activeforeground=default_active_font_color, font=default_button_font)
 
     def select_proc(self):
         _Session = sessionmaker(bind=my_engine)
@@ -429,7 +485,7 @@ class App(Tk):
         self.buttons_list.append(self.show_db_menu_button)
         self.new_order_button.place(x=20, y=620)
         self.buttons_list.append(self.new_order_button)
-        self.actions_with_db_button.place(x=355, y=520)
+        self.actions_with_db_button.place(x=340, y=520)
         self.buttons_list.append(self.actions_with_db_button)
         self.exit_button.place(x=1120, y=620)
         self.buttons_list.append(self.exit_button)
@@ -437,6 +493,8 @@ class App(Tk):
         self.place_output_window('')
         self.button_background.place(x=0, y=450)
 
+    def sku_search(self):
+        pass
     def exit_from_gui(self):
         self.destroy()
 
@@ -468,7 +526,7 @@ class App(Tk):
         self.show_hdd_button.place(x=330, y=620)
         self.buttons_list.append(self.show_hdd_button)
 
-        self.show_case_button.place(x=970, y=620)
+        self.show_case_button.place(x=960, y=620)
         self.buttons_list.append(self.show_case_button)
 
         self.show_order_button.place(x=640, y=520)
@@ -479,6 +537,9 @@ class App(Tk):
 
         self.go_to_main_menu_button.place(x=1120, y=620)
         self.buttons_list.append(self.go_to_main_menu_button)
+
+        self.sku_search_button.place(x=960, y=520)
+        self.buttons_list.append(self.sku_search_button)
 
     def create_or_drop_db_menu(self):
         for button in self.buttons_list:
@@ -567,6 +628,7 @@ class App(Tk):
 
 
 if __name__ == '__main__':
+    #authorization_window()
     connect_db()
     app = App()
     app.geometry(default_resolution + '+120+50')
@@ -574,3 +636,6 @@ if __name__ == '__main__':
     app.resizable(width=False, height=False)
     app.main_menu()
     app.mainloop()
+
+    # new order
+    # sku search
