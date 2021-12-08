@@ -529,17 +529,17 @@ VALUES
 INSERT INTO case_pc
 VALUES
 (9100,	'Aerocool',	'Bolt Mini',	'Micro-ATX',	318,	2899,	3),
-(9101,	'Aerocool',	'Glider-G',	'Standatr-ATX',	325,	3099,	2),
-(9200,	'be quiet!',	'PURE BASE 500 Window',	'Standatr-ATX',	369,	7899,	4),
-(9300,	'CoolerMaster',	'MasterBox K501L',	'Standatr-ATX',	410,	3599,	4),
-(9400,	'Corsair',	'Carbide Series SPEC-DELTA RGB',	'Standatr-ATX',	330,	4999,	5),
+(9101,	'Aerocool',	'Glider-G',	'Standart-ATX',	325,	3099,	2),
+(9200,	'be quiet!',	'PURE BASE 500 Window',	'Standart-ATX',	369,	7899,	4),
+(9300,	'CoolerMaster',	'MasterBox K501L',	'Standart-ATX',	410,	3599,	4),
+(9400,	'Corsair',	'Carbide Series SPEC-DELTA RGB',	'Standart-ATX',	330,	4999,	5),
 (9500,	'Cougar',	'MG120-G',	'Micro-ATX',	330,	2999,	5),
 (9501,	'Cougar',	'QBX',	'Mini-ITX',	350,	4450,	4),
 (9600,	'DEEPCOOL',	'E_SHIELD',	'E-ATX',	370,	3750,	2),
-(9601,	'DEEPCOOL',	'MATREXX 55 MESH ADD-RGB 4F',	'Standatr-ATX',	370,	5950,	4),
-(9700,	'Fractal Design',	'Core 2300',	'Standatr-ATX',	380,	5199,	2),
+(9601,	'DEEPCOOL',	'MATREXX 55 MESH ADD-RGB 4F',	'Standart-ATX',	370,	5950,	4),
+(9700,	'Fractal Design',	'Core 2300',	'Standart-ATX',	380,	5199,	2),
 (9800,	'NZXT',	'H510',	'Standatr-ATX',	381,	6499,	2),
-(9900,	'Thermaltake',	'Versa T35 TG RGB',	'Standatr-ATX',	300,	4699,	3),
+(9900,	'Thermaltake',	'Versa T35 TG RGB',	'Standart-ATX',	300,	4699,	3),
 (9901,	'Thermaltake',	'The Tower 100',	'Mini-ITX',	330,	8799,	1);
 
 

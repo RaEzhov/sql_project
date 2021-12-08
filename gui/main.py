@@ -1,4 +1,4 @@
-from tkinter import Button, Canvas, PhotoImage, Label, Tk, Text, Toplevel, Entry, ttk, Spinbox
+from tkinter import Button, Canvas, PhotoImage, Label, Tk, Text, Toplevel, Entry, ttk
 import tkinter
 import tkinter.messagebox as mb
 
@@ -31,6 +31,12 @@ default_info_font_color = '#000'           # 222
 additional_color_1 = '#4a4a4a'             # 528
 # postgresql connection
 my_engine = 0
+motherboard_form_factor_dict = {'Mini-ITX': 0,
+                                'Micro-ATX': 1,
+                                'Mini-ATX': 2,
+                                'Standart-ATX': 3,
+                                'XL-ATX': 4,
+                                'E-ATX': 5}
 
 
 def max_length(lst):
@@ -94,6 +100,7 @@ class App(Tk):
             self.background_label = Label(self, image=self.filename)
             self.info_output = 0
             self.combo_boxes = []
+            self.components_dict = {}
             self.button_background = Canvas(self, width=1280, height=270,
                                             bg=default_button_bg_color, highlightthickness=0)
             self.button_background.create_line(5, 5, 1275, 5, fill=additional_color_1, width=2)
@@ -502,13 +509,33 @@ class App(Tk):
         sku_list = []
         for i in range(10):
             sku_list.append(self.combo_boxes[i].get()[0:4])
-        print(sku_list)
         if '' in sku_list:
             mb.showinfo('Information', message='Not all components selected!')
+        elif self.components_dict[sku_list[0]][3] != self.components_dict[sku_list[1]][3] or \
+                self.components_dict[sku_list[2]][3] != self.components_dict[sku_list[1]][5] or \
+                int(self.components_dict[sku_list[1]][6]) < int(sku_list[9]) or \
+                self.components_dict[sku_list[5]][4] == 'm.2' and self.components_dict[sku_list[1]][8] == '0' or \
+                motherboard_form_factor_dict[self.components_dict[sku_list[1]][7]] > \
+                motherboard_form_factor_dict[self.components_dict[sku_list[8]][3]] or \
+                int(self.components_dict[sku_list[3]][6]) > int(self.components_dict[sku_list[8]][4]) or \
+                self.components_dict[sku_list[4]][3] != self.components_dict[sku_list[0]][3] or \
+                int(self.components_dict[sku_list[0]][7]) > int(self.components_dict[sku_list[4]][4]):
+            # Compares:
+            # Proc socket != MoBo socket
+            # RAM type != MoBo ram type
+            # MoBo RAM amount < user RAM amount
+            # SSD type == m.2 and MoBo m.2 amount slots == 0
+            # MoBo form-factor > case form-factor
+            # GPU length > case gpu length
+            # cooling socket != proc socket
+            # proc tdp > cool tdp
+            mb.showinfo('Information', message='The selected components are not compatible.')
+        else:
+            pass  # CALL new_order procedure
 
     def show_new_order_menu(self):
-        self.place_output_window('Choose components:\n\nProcessor\n\nMotherboard\n\nRAM\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t'
-                                 '\t(amount)\n\nGraphics card\n\nCooling\n\nSSD\n\nHDD\n\nPower supply\n\nCase')
+        self.place_output_window(' Choose components:\n\n Processor\n\n Motherboard\n\n RAM\t\t\t\t\t\t\t\t\t\t\t\t\t\t'
+                                 '\t\t(amount)\n\n Graphics card\n\n Cooling\n\n SSD\n\n HDD\n\n Power supply\n\n Case')
         for button in self.buttons_list:
             button.place_forget()
         self.buttons_list = []
@@ -521,6 +548,7 @@ class App(Tk):
         func_list = [func.return_proc(), func.return_motherboard(), func.return_ram(),
                      func.return_gpu(), func.return_cool(), func.return_ssd(),
                      func.return_hdd(), func.return_power_supply(), func.return_case_pc()]
+        self.components_dict = {}
         for i in range(9):
             data = session.query(func_list[i]).all()
             output = []
@@ -528,6 +556,7 @@ class App(Tk):
                 for el1 in el:
                     value = list(el1[1:-1].replace('"', '').split(','))
                     output.append(value)
+                    self.components_dict[value[0]] = value
             make_list_of_str(output)
             self.combo_boxes.append(ttk.Combobox(self, font=default_font, values=output, width=106, state='readonly'))
             self.combo_boxes[i].place(x=150, y=68 + i*38)
