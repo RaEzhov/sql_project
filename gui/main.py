@@ -1,4 +1,4 @@
-from tkinter import Button, Canvas, PhotoImage, Label, Tk, Text, Toplevel, ttk
+from tkinter import Button, Canvas, PhotoImage, Label, Tk, Text, Toplevel, Entry, ttk, Spinbox
 import tkinter
 import tkinter.messagebox as mb
 
@@ -49,14 +49,21 @@ def add_spaces(lst):
             lst[i][j] = lst[i][j] + ' ' * (max_len[j] - length + 1)
 
 
+def make_list_of_str(lst):
+    for i in range(len(lst)):
+        tmp_str = ''
+        for j in range(len(lst[i])):
+            tmp_str += lst[i][j] + ' '
+        lst[i] = tmp_str
+
+
 def connect_db():
     global my_engine
     my_engine = create_engine(pg_url)
 
 
-def hello():
-    msg = 'Hello, world!'
-    mb.showinfo('Info', msg)
+def validate(new_value):
+    return new_value == "" or new_value.isnumeric()
 
 
 class About(Toplevel):
@@ -79,106 +86,117 @@ class App(Tk):
     def __init__(self):
         super().__init__()
         global my_engine
-        self.buttons_list = []
-        # background image
-        self.button_image = PhotoImage(file='button.png')
-        self.button_half_image = PhotoImage(file='button_half.png')
-        self.filename = PhotoImage(file='./bg_im.gif')
-        self.background_label = Label(self, image=self.filename)
+        if True:
+            self.buttons_list = []
+            self.button_image = PhotoImage(file='button.png')
+            self.button_half_image = PhotoImage(file='button_half.png')
+            self.filename = PhotoImage(file='./bg_im.gif')
+            self.background_label = Label(self, image=self.filename)
+            self.info_output = 0
+            self.combo_boxes = []
+            self.button_background = Canvas(self, width=1280, height=270,
+                                            bg=default_button_bg_color, highlightthickness=0)
+            self.button_background.create_line(5, 5, 1275, 5, fill=additional_color_1, width=2)
+            self.button_background.create_line(1275, 5, 1275, 265, fill=additional_color_1, width=2)
+            self.button_background.create_line(1275, 265, 5, 265, fill=additional_color_1, width=2)
+            self.button_background.create_line(5, 265, 5, 5, fill=additional_color_1, width=2)
 
-        self.info_output = Text(font=default_font, width=154, height=20, bg=default_info_win_color,
-                                fg=default_info_font_color, wrap=tkinter.WORD)
+            self.button_background.create_oval(25-5, 35 - 5, 25 + 5, 35 + 5, fill='#0f0', outline="")
+            self.button_background.create_text(35, 35, anchor=tkinter.W, font=default_font, text=db_connected)
 
-        self.button_background = Canvas(self, width=1280, height=270,
-                                        bg=default_button_bg_color, highlightthickness=0)
-        self.button_background.create_line(5, 5, 1275, 5, fill=additional_color_1, width=2)
-        self.button_background.create_line(1275, 5, 1275, 265, fill=additional_color_1, width=2)
-        self.button_background.create_line(1275, 265, 5, 265, fill=additional_color_1, width=2)
-        self.button_background.create_line(5, 265, 5, 5, fill=additional_color_1, width=2)
-
-        self.button_background.create_oval(25-5, 35 - 5, 25 + 5, 35 + 5, fill='#0f0', outline="")
-        self.button_background.create_text(35, 35, anchor=tkinter.W, font=default_font, text=db_connected)
-
-        self.create_db_button = Button(text='Create DB', image=self.button_image, compound='center',
-                                       command=self.create_my_database, foreground=default_font_color, border=0,
-                                       background=default_button_bg_color, activebackground=default_button_bg_color,
-                                       activeforeground=default_active_font_color, font=default_button_font)
-        self.drop_db_button = Button(text='Drop DB', command=self.drop_my_database, image=self.button_image,
-                                     compound='center', foreground=default_font_color, border=0,
-                                     background=default_button_bg_color, activebackground=default_button_bg_color,
-                                     activeforeground=default_active_font_color, font=default_button_font)
-        self.show_db_menu_button = Button(text='Show tables', command=self.show_db_menu, image=self.button_image,
-                                          compound='center', foreground=default_font_color, border=0,
-                                          background=default_button_bg_color, activebackground=default_button_bg_color,
-                                          activeforeground=default_active_font_color, font=default_button_font)
-        self.new_order_button = Button(text='New order', command=self.show_new_order_menu, image=self.button_image,
-                                       compound='center', foreground=default_font_color, border=0,
-                                       background=default_button_bg_color, activebackground=default_button_bg_color,
-                                       activeforeground=default_active_font_color, font=default_button_font)
-        self.actions_with_db_button = Button(text='Actions with DB', command=self.create_or_drop_db_menu,
-                                             image=self.button_image, compound='center', foreground=default_font_color,
-                                             border=0,
-                                             background=default_button_bg_color,
-                                             activebackground=default_button_bg_color,
-                                             activeforeground=default_active_font_color, font=default_button_font)
-        self.exit_button = Button(text='Exit', command=self.exit_from_gui, foreground=default_font_color,
-                                  image=self.button_half_image, compound='center', border=0,
-                                  background=default_button_bg_color, activebackground=default_button_bg_color,
-                                  activeforeground=default_active_font_color, font=default_button_font)
-        self.go_to_main_menu_button = Button(text='Back', command=self.main_menu, foreground=default_font_color,
-                                             image=self.button_half_image, compound='center', border=0,
-                                             background=default_button_bg_color,
-                                             activebackground=default_button_bg_color,
-                                             activeforeground=default_active_font_color, font=default_button_font)
-        self.show_processors_button = Button(text='Processors', command=self.select_proc, foreground=default_font_color,
-                                             image=self.button_half_image, compound='center', border=0,
-                                             background=default_button_bg_color,
-                                             activebackground=default_button_bg_color,
-                                             activeforeground=default_active_font_color, font=default_button_font)
-        self.show_motherboards_button = Button(text='Motherboards', command=self.select_motherboard,
-                                               foreground=default_font_color, image=self.button_half_image,
-                                               compound='center', border=0,
-                                               background=default_button_bg_color,
-                                               activebackground=default_button_bg_color,
-                                               activeforeground=default_active_font_color, font=default_button_font)
-        self.show_gpu_button = Button(text='Videocards', command=self.select_gpu, foreground=default_font_color,
-                                      image=self.button_half_image, compound='center', border=0,
-                                      background=default_button_bg_color, activebackground=default_button_bg_color,
-                                      activeforeground=default_active_font_color, font=default_button_font)
-        self.show_ram_button = Button(text='RAM', command=self.select_ram, foreground=default_font_color,
-                                      image=self.button_half_image, compound='center', border=0,
-                                      background=default_button_bg_color, activebackground=default_button_bg_color,
-                                      activeforeground=default_active_font_color, font=default_button_font)
-        self.show_cooling_button = Button(text='Cooling', command=self.select_cooling, foreground=default_font_color,
-                                          image=self.button_half_image, compound='center', border=0,
-                                          background=default_button_bg_color, activebackground=default_button_bg_color,
-                                          activeforeground=default_active_font_color, font=default_button_font)
-        self.show_power_supply_button = Button(text='Power supply', command=self.select_power_supply,
-                                               foreground=default_font_color, image=self.button_half_image,
-                                               compound='center', border=0,
-                                               background=default_button_bg_color,
-                                               activebackground=default_button_bg_color,
-                                               activeforeground=default_active_font_color, font=default_button_font)
-        self.show_ssd_button = Button(text='SSD', command=self.select_ssd, foreground=default_font_color,
-                                      image=self.button_half_image, compound='center', border=0,
-                                      background=default_button_bg_color, activebackground=default_button_bg_color,
-                                      activeforeground=default_active_font_color, font=default_button_font)
-        self.show_hdd_button = Button(text='HDD', command=self.select_hdd, foreground=default_font_color,
-                                      image=self.button_half_image, compound='center', border=0,
-                                      background=default_button_bg_color, activebackground=default_button_bg_color,
-                                      activeforeground=default_active_font_color, font=default_button_font)
-        self.show_case_button = Button(text='Cases', command=self.select_case, foreground=default_font_color,
-                                       image=self.button_half_image, compound='center', border=0,
-                                       background=default_button_bg_color, activebackground=default_button_bg_color,
-                                       activeforeground=default_active_font_color, font=default_button_font)
-        self.show_order_button = Button(text='Orders', command=self.select_order, image=self.button_image,
-                                        compound='center', foreground=default_font_color, border=0,
-                                        background=default_button_bg_color, activebackground=default_button_bg_color,
-                                        activeforeground=default_active_font_color, font=default_button_font)
-        self.show_customer_button = Button(text='Customers', command=self.select_customer, image=self.button_image,
+            self.create_db_button = Button(text='Create DB', image=self.button_image, compound='center',
+                                           command=self.create_my_database, foreground=default_font_color, border=0,
+                                           background=default_button_bg_color, activebackground=default_button_bg_color,
+                                           activeforeground=default_active_font_color, font=default_button_font)
+            self.drop_db_button = Button(text='Drop DB', command=self.drop_my_database, image=self.button_image,
+                                         compound='center', foreground=default_font_color, border=0,
+                                         background=default_button_bg_color, activebackground=default_button_bg_color,
+                                         activeforeground=default_active_font_color, font=default_button_font)
+            self.show_db_menu_button = Button(text='Show tables', command=self.show_db_menu, image=self.button_image,
+                                              compound='center', foreground=default_font_color, border=0,
+                                              background=default_button_bg_color,
+                                              activebackground=default_button_bg_color,
+                                              activeforeground=default_active_font_color, font=default_button_font)
+            self.new_order_button = Button(text='New order', command=self.show_new_order_menu, image=self.button_image,
                                            compound='center', foreground=default_font_color, border=0,
                                            background=default_button_bg_color, activebackground=default_button_bg_color,
                                            activeforeground=default_active_font_color, font=default_button_font)
+            self.actions_with_db_button = Button(text='Actions with DB', command=self.create_or_drop_db_menu,
+                                                 image=self.button_image, compound='center',
+                                                 foreground=default_font_color,
+                                                 border=0,
+                                                 background=default_button_bg_color,
+                                                 activebackground=default_button_bg_color,
+                                                 activeforeground=default_active_font_color, font=default_button_font)
+            self.exit_button = Button(text='Exit', command=self.exit_from_gui, foreground=default_font_color,
+                                      image=self.button_half_image, compound='center', border=0,
+                                      background=default_button_bg_color, activebackground=default_button_bg_color,
+                                      activeforeground=default_active_font_color, font=default_button_font)
+            self.go_to_main_menu_button = Button(text='Back', command=self.main_menu, foreground=default_font_color,
+                                                 image=self.button_half_image, compound='center', border=0,
+                                                 background=default_button_bg_color,
+                                                 activebackground=default_button_bg_color,
+                                                 activeforeground=default_active_font_color, font=default_button_font)
+            self.show_processors_button = Button(text='Processors', command=self.select_proc,
+                                                 foreground=default_font_color,
+                                                 image=self.button_half_image, compound='center', border=0,
+                                                 background=default_button_bg_color,
+                                                 activebackground=default_button_bg_color,
+                                                 activeforeground=default_active_font_color, font=default_button_font)
+            self.show_motherboards_button = Button(text='Motherboards', command=self.select_motherboard,
+                                                   foreground=default_font_color, image=self.button_half_image,
+                                                   compound='center', border=0,
+                                                   background=default_button_bg_color,
+                                                   activebackground=default_button_bg_color,
+                                                   activeforeground=default_active_font_color, font=default_button_font)
+            self.show_gpu_button = Button(text='Videocards', command=self.select_gpu, foreground=default_font_color,
+                                          image=self.button_half_image, compound='center', border=0,
+                                          background=default_button_bg_color, activebackground=default_button_bg_color,
+                                          activeforeground=default_active_font_color, font=default_button_font)
+            self.show_ram_button = Button(text='RAM', command=self.select_ram, foreground=default_font_color,
+                                          image=self.button_half_image, compound='center', border=0,
+                                          background=default_button_bg_color, activebackground=default_button_bg_color,
+                                          activeforeground=default_active_font_color, font=default_button_font)
+            self.show_cooling_button = Button(text='Cooling', command=self.select_cooling,
+                                              foreground=default_font_color,
+                                              image=self.button_half_image, compound='center', border=0,
+                                              background=default_button_bg_color,
+                                              activebackground=default_button_bg_color,
+                                              activeforeground=default_active_font_color, font=default_button_font)
+            self.show_power_supply_button = Button(text='Power supply', command=self.select_power_supply,
+                                                   foreground=default_font_color, image=self.button_half_image,
+                                                   compound='center', border=0,
+                                                   background=default_button_bg_color,
+                                                   activebackground=default_button_bg_color,
+                                                   activeforeground=default_active_font_color, font=default_button_font)
+            self.show_ssd_button = Button(text='SSD', command=self.select_ssd, foreground=default_font_color,
+                                          image=self.button_half_image, compound='center', border=0,
+                                          background=default_button_bg_color, activebackground=default_button_bg_color,
+                                          activeforeground=default_active_font_color, font=default_button_font)
+            self.show_hdd_button = Button(text='HDD', command=self.select_hdd, foreground=default_font_color,
+                                          image=self.button_half_image, compound='center', border=0,
+                                          background=default_button_bg_color, activebackground=default_button_bg_color,
+                                          activeforeground=default_active_font_color, font=default_button_font)
+            self.show_case_button = Button(text='Cases', command=self.select_case, foreground=default_font_color,
+                                           image=self.button_half_image, compound='center', border=0,
+                                           background=default_button_bg_color, activebackground=default_button_bg_color,
+                                           activeforeground=default_active_font_color, font=default_button_font)
+            self.show_order_button = Button(text='Orders', command=self.select_order, image=self.button_image,
+                                            compound='center', foreground=default_font_color, border=0,
+                                            background=default_button_bg_color,
+                                            activebackground=default_button_bg_color,
+                                            activeforeground=default_active_font_color, font=default_button_font)
+            self.show_customer_button = Button(text='Customers', command=self.select_customer, image=self.button_image,
+                                               compound='center', foreground=default_font_color, border=0,
+                                               background=default_button_bg_color,
+                                               activebackground=default_button_bg_color,
+                                               activeforeground=default_active_font_color, font=default_button_font)
+            self.confirm_order_button = Button(text='Confirm', command=self.new_order,
+                                               image=self.button_image, compound='center',
+                                               foreground=default_font_color, border=0,
+                                               background=default_button_bg_color,
+                                               activebackground=default_button_bg_color,
+                                               activeforeground=default_active_font_color, font=default_button_font)
 
     def select_proc(self):
         _Session = sessionmaker(bind=my_engine)
@@ -318,7 +336,7 @@ class App(Tk):
         session = _Session()
         data = session.query(func.return_hdd()).all()
         output = []
-        columns = ['SKU', 'Brand', 'Model', 'Capacity','Rotation speed', 'Form factor',
+        columns = ['SKU', 'Brand', 'Model', 'Capacity', 'Rotation speed', 'Form factor',
                    'Price', 'Amount']
         output.append(columns)
         for el in data:
@@ -356,8 +374,8 @@ class App(Tk):
         session = _Session()
         data = session.query(func.return_order_customer()).all()
         output = []
-        columns = ['ID', 'Customer phone', 'Processor', 'Cooling', 'RAM', 'RAM amt',
-                   'Motherboard', 'GPU', 'HDD', 'SSD', 'Power supply', 'Case', 'Commentaries', 'Status', 'Price']
+        columns = ['ID', 'Customer', 'CPU', 'Cooling', 'RAM', 'RAM amt',
+                   'MoBo', 'GPU', 'HDD', 'SSD', 'PSU', 'Case', 'Commentaries', 'Status', 'Price']
         output.append(columns)
         for el in data:
             for el1 in el:
@@ -390,7 +408,7 @@ class App(Tk):
         self.place_output_window(output_str)
 
     def place_output_window(self, info):
-        self.info_output = Text(font=default_font, width=154, height=20, bg=default_info_win_color,
+        self.info_output = Text(font=default_font, width=137, height=20, bg=default_info_win_color,
                                 fg=default_info_font_color, wrap=tkinter.WORD)
         self.info_output.insert(tkinter.INSERT, info)
         self.info_output.configure(state='disabled')
@@ -446,14 +464,14 @@ class App(Tk):
         self.show_case_button.place(x=970, y=620)
         self.buttons_list.append(self.show_case_button)
 
-        self.go_to_main_menu_button.place(x=1120, y=620)
-        self.buttons_list.append(self.go_to_main_menu_button)
-
         self.show_order_button.place(x=640, y=520)
         self.buttons_list.append(self.show_order_button)
 
         self.show_customer_button.place(x=640, y=620)
         self.buttons_list.append(self.show_customer_button)
+
+        self.go_to_main_menu_button.place(x=1120, y=620)
+        self.buttons_list.append(self.go_to_main_menu_button)
 
     def create_or_drop_db_menu(self):
         for button in self.buttons_list:
@@ -481,12 +499,42 @@ class App(Tk):
             self.place_output_window(f'Database {default_pg_db_name} not exists.\n')
 
     def new_order(self):
-        pass
+        sku_list = []
+        for i in range(10):
+            sku_list.append(self.combo_boxes[i].get()[0:4])
+        print(sku_list)
+        if '' in sku_list:
+            mb.showinfo('Information', message='Not all components selected!')
 
     def show_new_order_menu(self):
-        pass
-        # new buttons (coonfirm, cancel)
-        # Comboboxes with parts on info_label
+        self.place_output_window('Choose components:\n\nProcessor\n\nMotherboard\n\nRAM\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t'
+                                 '\t(amount)\n\nGraphics card\n\nCooling\n\nSSD\n\nHDD\n\nPower supply\n\nCase')
+        for button in self.buttons_list:
+            button.place_forget()
+        self.buttons_list = []
+        self.confirm_order_button.place(x=20, y=520)
+        self.buttons_list.append(self.confirm_order_button)
+        self.go_to_main_menu_button.place(x=1120, y=620)
+        self.buttons_list.append(self.go_to_main_menu_button)
+        self.combo_boxes = []
+        session = (sessionmaker(bind=my_engine))()
+        func_list = [func.return_proc(), func.return_motherboard(), func.return_ram(),
+                     func.return_gpu(), func.return_cool(), func.return_ssd(),
+                     func.return_hdd(), func.return_power_supply(), func.return_case_pc()]
+        for i in range(9):
+            data = session.query(func_list[i]).all()
+            output = []
+            for el in data:
+                for el1 in el:
+                    value = list(el1[1:-1].replace('"', '').split(','))
+                    output.append(value)
+            make_list_of_str(output)
+            self.combo_boxes.append(ttk.Combobox(self, font=default_font, values=output, width=106, state='readonly'))
+            self.combo_boxes[i].place(x=150, y=68 + i*38)
+        vcmd = (self.register(validate), '%P')
+        ram_amount = Entry(self, font=default_font, width=3, validate='key', validatecommand=vcmd)
+        self.combo_boxes.append(ram_amount)
+        ram_amount.place(x=1140, y=145)
 
 
 if __name__ == '__main__':
