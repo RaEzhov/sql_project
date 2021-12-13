@@ -105,3 +105,33 @@ How to add new product
 Press to "New product" button. Enter sku.  
 if this sku already exists then user enter amont of new products and this number adds to old value.  
 if this slu is not exists then user enter all information about product and this cortege adds to table.  
+
+drop_all_tables() - delete all tables  
+clear_all_tables() - clear information from all tables  
+create_all_tables() - create all 11 tables  
+insert_proc(all rows from processor) - insert data row into table processor  
+insert_cool(all rows from coll) - insert data row into table cooling  
+insert_motherboard(all rows from motherboard) - insert data row into table motherboard  
+insert_gpu(all rows from graphics_card) - insert data row into table graphics_card  
+insert_ram(all rows from ram) - insert data row into table ram  
+insert_power_supply(all rows from power_supply) - insert data row into table power_supply
+insert_case_pc(all rows from case_pc) - insert data row into table case_pc  
+insert_case_hdd(all rows from hard_disc_drive) - insert data row into table hard_disc_drive  
+insert_case_ssd(all rows from solid_state_drive) - insert data row into table solid_state_drive  
+insert_case_order_customer(all rows from order_customer) - insert data row into table order_customer  
+insert_case_customer(all rows from customer) - insert data row into table customer  
+return_proc() - return all rows from processor
+return_cool() - return all rows from cooling
+return_motherboard() - return all rows from motherboard
+return_gpu() - return all rows from graphics_card
+return_ram() - return all rows from ram
+return_power_supply() - return all rows from power_supply
+return_case_pc() - return all rows from case_pc
+return_hdd() - return all rows from hard_disc_drive
+return_ssd() - return all rows from solid_state_drive
+return_order_customer() - return all rows from order_customer
+return_customer() - return all rows from customer
+insert_data_to_tables() - insert data to all tables for example
+change_status_complete_order(order_id_arg INT) - change status from 'In progress' to 'Complete'
+change_status_cancel_order(order_id_arg INT, and all sku from order_customer) - change status from 'In progress' to 'Cancel' and returns components to storage
+
