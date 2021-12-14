@@ -91,8 +91,6 @@ def validate(new_value):
 
 
 def num_in_list(number, list_numbers):
-    print(number)
-    print(list_numbers)
     for i in list_numbers:
         if str(number) in str(i):
             return True
@@ -113,16 +111,34 @@ class App(Tk):
         self.combo_boxes = []
         self.checkbox_values = []
         self.components_dict = {}
+
+        self.option_add("*TCombobox*Listbox.Font", default_font)
+
         self.button_background = Canvas(self, width=1280, height=270,
                                         bg=default_button_bg_color, highlightthickness=0)
         self.sku_entry = Entry(font=default_font, background=additional_color_1, foreground=default_info_win_color,
                                width=4)
+        self.sku_text = Text(font=default_font, width=4, height=1, bg=default_info_win_color,
+                             fg=default_info_font_color, wrap=tkinter.WORD, bd=0)
+        self.sku_text.insert(tkinter.INSERT, 'SKU:')
+        self.sku_text.configure(state='disabled')
+
+        self.sku_amount_entry = Entry(font=default_font, background=additional_color_1,
+                                      foreground=default_info_win_color, width=4)
+        self.sku_amount_text = Text(font=default_font, width=7, height=1, bg=default_info_win_color,
+                                    fg=default_info_font_color, wrap=tkinter.WORD, bd=0)
+        self.sku_amount_text.insert(tkinter.INSERT, 'Amount:')
+        self.sku_amount_text.configure(state='disabled')
+
         self.customer_comment_entry = Entry(font=default_font, background=additional_color_1,
                                             foreground=default_info_win_color, width=30)
         self.customer_phone_entry = Entry(font=default_font, background=additional_color_1,
                                           foreground=default_info_win_color, width=11)
         self.customer_comment_text = Text(font=default_font, width=17, height=1, bg=default_info_win_color,
                                           fg=default_info_font_color, wrap=tkinter.WORD, bd=0)
+        self.customer_comment_text.insert(tkinter.INSERT, 'Customer comment:')
+        self.customer_comment_text.configure(state='disabled')
+
         self.customer_first_name_entry = Entry(font=default_font, background=additional_color_1,
                                                foreground=default_info_win_color, width=11)
         self.customer_last_name_entry = Entry(font=default_font, background=additional_color_1,
@@ -145,8 +161,8 @@ class App(Tk):
                                                  onvalue=1, offvalue=0, command=self.update_first_last_name_entry)
         self.customer_phone_text = Text(font=default_font, width=15, height=1, bg=default_info_win_color,
                                         fg=default_info_font_color, wrap=tkinter.WORD, bd=0)
-        self.sku_text = Text(font=default_font, width=4, height=1, bg=default_info_win_color,
-                             fg=default_info_font_color, wrap=tkinter.WORD, bd=0)
+        self.customer_phone_text.insert(tkinter.INSERT, 'Customer phone:')
+        self.customer_phone_text.configure(state='disabled')
         self.button_background.create_line(5, 5, 1275, 5, fill=additional_color_1, width=2)
         self.button_background.create_line(1275, 5, 1275, 265, fill=additional_color_1, width=2)
         self.button_background.create_line(1275, 265, 5, 265, fill=additional_color_1, width=2)
@@ -182,6 +198,20 @@ class App(Tk):
                                              background=default_button_bg_color,
                                              activebackground=default_button_bg_color,
                                              activeforeground=default_active_font_color, font=default_button_font)
+        self.update_db_menu_button = Button(text='Update Database', command=self.update_db_menu,
+                                            image=self.button_image, compound='center',
+                                            foreground=default_font_color,
+                                            border=0,
+                                            background=default_button_bg_color,
+                                            activebackground=default_button_bg_color,
+                                            activeforeground=default_active_font_color, font=default_button_font)
+        self.update_db_button = Button(text='Update amount of this SKU', command=self.update_db,
+                                       image=self.button_image, compound='center',
+                                       foreground=default_font_color,
+                                       border=0,
+                                       background=default_button_bg_color,
+                                       activebackground=default_button_bg_color,
+                                       activeforeground=default_active_font_color, font=default_button_font)
         self.complete_order_button = Button(text='Complete', command=self.complete_order,
                                             image=self.button_image, compound='center',
                                             foreground=default_font_color, border=0,
@@ -293,10 +323,14 @@ class App(Tk):
                                            activebackground=default_button_bg_color,
                                            activeforeground=default_active_font_color, font=default_button_font)
         self.sku_search_button = Button(text='SKU search', command=self.sku_search,
-                                        image=self.button_image, compound='center',
-                                        foreground=default_font_color, border=0,
-                                        background=default_button_bg_color,
-                                        activebackground=default_button_bg_color,
+                                        foreground=default_font_color,
+                                        image=self.button_half_image, compound='center', border=0,
+                                        background=default_button_bg_color, activebackground=default_button_bg_color,
+                                        activeforeground=default_active_font_color, font=default_button_font)
+        self.sku_delete_button = Button(text='SKU delete', command=self.sku_delete,
+                                        foreground=default_font_color,
+                                        image=self.button_half_image, compound='center', border=0,
+                                        background=default_button_bg_color, activebackground=default_button_bg_color,
                                         activeforeground=default_active_font_color, font=default_button_font)
 
     def select_proc(self):
@@ -504,10 +538,14 @@ class App(Tk):
             self.new_order_button['state'] = 'disabled'
             self.show_db_menu_button['state'] = 'disabled'
             self.clearing_tables_button['state'] = 'disabled'
+            self.complete_cancel_button['state'] = 'disabled'
+            self.update_db_menu_button['state'] = 'disabled'
         else:
             self.new_order_button['state'] = 'normal'
             self.show_db_menu_button['state'] = 'normal'
             self.clearing_tables_button['state'] = 'normal'
+            self.complete_cancel_button['state'] = 'normal'
+            self.update_db_menu_button['state'] = 'normal'
         self.show_db_menu_button.place(x=20, y=520)
         self.buttons_list.append(self.show_db_menu_button)
         self.new_order_button.place(x=20, y=620)
@@ -516,6 +554,8 @@ class App(Tk):
         self.buttons_list.append(self.actions_with_db_button)
         self.complete_cancel_button.place(x=660, y=520)
         self.buttons_list.append(self.complete_cancel_button)
+        self.update_db_menu_button.place(x=660, y=620)
+        self.buttons_list.append(self.update_db_menu_button)
         self.clearing_tables_button.place(x=340, y=620)
         self.buttons_list.append(self.clearing_tables_button)
         self.exit_button.place(x=1120, y=620)
@@ -527,21 +567,33 @@ class App(Tk):
     def complete_order(self):
         session = Session(my_engine)
         order_id = self.order_id_entry.get()
-        print(order_id)
-        print(type(order_id))
         if order_id.isdigit():
             is_available = list(session.execute(f'SELECT is_available_order({int(order_id)})'))[0][0]
-            print(is_available)
             if is_available == 1:
                 session.execute(f'''CALL change_status_complete_order({int(order_id)});''')
-                self.place_output_window('Status was changed!')
+                self.place_output_window('Order was completed!')
         else:
             mb.showinfo('Information', message='Order with this ID does not exists or it\'s status not \'in progress\'')
         session.commit()
         session.close()
 
     def cancel_order(self):
-        pass
+        session = Session(my_engine)
+        order_id = self.order_id_entry.get()
+        if order_id.isdigit():
+            sku_list = list(session.execute(f'SELECT return_sku_with_order_id({order_id});'))
+            sku_list = list(map(int, sku_list[0][0][1:-1].split(',')))
+            is_available = list(session.execute(f'SELECT is_available_order({int(order_id)})'))[0][0]
+            if is_available == 1:
+                session.execute(f'''CALL change_status_cancel_order({int(order_id)}, {sku_list[0]}, {sku_list[1]}, 
+                                {sku_list[2]}, {sku_list[3]}, {sku_list[4]}, {sku_list[5]}, {sku_list[6]}, 
+                                {sku_list[7]}, {sku_list[8]}, {sku_list[9]});''')
+                self.place_output_window('Order was canceled!')
+            else:
+                mb.showinfo('Information',
+                            message='Order with this ID does not exists or it\'s status not \'in progress\'')
+        session.commit()
+        session.close()
 
     def complete_cancel_order_menu(self):
         for button in self.buttons_list:
@@ -549,13 +601,16 @@ class App(Tk):
         self.buttons_list = []
         self.go_to_main_menu_button.place(x=1120, y=620)
         self.buttons_list.append(self.go_to_main_menu_button)
-        self.show_order_button.place(x=640, y=520)
+        self.show_order_button.place(x=340, y=620)
         self.buttons_list.append(self.show_order_button)
 
         self.order_id_text.place(x=330, y=535)
         self.buttons_list.append(self.order_id_text)
+
         self.order_id_entry.place(x=330, y=560)
         self.buttons_list.append(self.order_id_entry)
+        self.order_id_entry.delete(0, tkinter.END)
+        self.order_id_entry.insert(0, "")
 
         self.complete_order_button.place(x=20, y=520)
         self.buttons_list.append(self.complete_order_button)
@@ -628,6 +683,52 @@ class App(Tk):
         session.close()
         self.place_output_window('All tables was cleared.')
 
+    def update_db_menu(self):
+        for button in self.buttons_list:
+            button.place_forget()
+        self.buttons_list = []
+        self.go_to_main_menu_button.place(x=1120, y=620)
+        self.buttons_list.append(self.go_to_main_menu_button)
+        self.update_db_button.place(x=20, y=620)
+        self.buttons_list.append(self.update_db_button)
+        self.sku_entry.place(x=100, y=520)
+        self.buttons_list.append(self.sku_entry)
+        self.sku_text.place(x=30, y=520)
+        self.buttons_list.append(self.sku_text)
+        self.sku_amount_entry.place(x=100, y=560)
+        self.buttons_list.append(self.sku_amount_entry)
+        self.sku_amount_text.place(x=30, y=560)
+        self.buttons_list.append(self.sku_amount_text)
+        self.sku_entry.delete(0, tkinter.END)
+        self.sku_entry.insert(0, "")
+        self.sku_amount_entry.delete(0, tkinter.END)
+        self.sku_amount_entry.insert(0, "")
+
+    def update_db(self):
+        amount = self.sku_amount_entry.get()
+        if not amount.isdigit():
+            mb.showinfo('Information', message='Amount is not number!')
+        else:
+            amount = int(amount)
+            sku = self.sku_entry.get()
+            if len(sku) != 4 or not sku.isdecimal() or sku[0] == '0':
+                mb.showinfo('Information', message='SKU is not supported!')
+            else:
+                query = f'''SELECT * FROM find_{names_of_tables[int(sku[0]) - 1]}_with_sku({sku});'''
+                res = my_cursor.execute(query)
+                res_str = ''
+                for i in res:
+                    for j in i:
+                        res_str += str(j) + '\t'
+                if res_str:
+                    session = Session(my_engine)
+                    session.execute(f'CALL update_amount_{names_of_tables[int(sku[0]) - 1]}({sku}, {amount});')
+                    self.place_output_window(res_str + f'<- old amount\n{amount} - new amount.')
+                    session.commit()
+                    session.close()
+                else:
+                    self.place_output_window('SKU not found!')
+
     def create_or_drop_db_menu(self):
         for button in self.buttons_list:
             button.place_forget()
@@ -660,44 +761,60 @@ class App(Tk):
         self.go_to_main_menu_button.place(x=1120, y=620)
         self.buttons_list.append(self.go_to_main_menu_button)
 
-        self.customer_phone_text.insert(tkinter.INSERT, 'Customer phone:')
-        self.customer_phone_text.configure(state='disabled')
         self.customer_phone_text.place(x=1008, y=481)
         self.buttons_list.append(self.customer_phone_text)
 
         self.customer_phone_entry.place(x=1150, y=480)
         self.buttons_list.append(self.customer_phone_entry)
+        self.customer_phone_entry.delete(0, tkinter.END)
+        self.customer_phone_entry.insert(0, "")
 
-        self.customer_comment_text.insert(tkinter.INSERT, 'Customer comment:')
-        self.customer_comment_text.configure(state='disabled')
         self.customer_comment_text.place(x=820, y=531)
         self.buttons_list.append(self.customer_comment_text)
 
-        self.new_customer_checkbox.place(x=820, y=480)
-        self.buttons_list.append(self.new_customer_checkbox)
-
         self.customer_comment_entry.place(x=980, y=530)
         self.buttons_list.append(self.customer_comment_entry)
+        self.customer_comment_entry.delete(0, tkinter.END)
+        self.customer_comment_entry.insert(0, "")
 
-        self.update_first_last_name_entry()
         self.customer_first_name_entry.place(x=820, y=580)
         self.buttons_list.append(self.customer_first_name_entry)
+        self.customer_first_name_entry.delete(0, tkinter.END)
+        self.customer_first_name_entry.insert(0, "")
+        self.customer_first_name_entry.insert(0, "First name")
 
         self.customer_last_name_entry.place(x=1000, y=580)
         self.buttons_list.append(self.customer_last_name_entry)
+        self.customer_last_name_entry.delete(0, tkinter.END)
+        self.customer_last_name_entry.insert(0, "")
+        self.customer_last_name_entry.insert(0, "Last name")
+
+        self.is_new_customer.set(0)
+        self.new_customer_checkbox.place(x=820, y=480)
+        self.buttons_list.append(self.new_customer_checkbox)
+
+        self.update_first_last_name_entry()
 
         self.combo_boxes = []
         self.components_dict = {}
         for i in range(9):
             data = my_cursor.execute(f'''SELECT * FROM return_{names_of_tables[i]}();''')
             output = []
-            for el in data:
-                value = list(el)
-                if value[-1] > 0:
-                    output.append(value)
-                    self.components_dict[value[0]] = value
+
+            for j in data:
+                if j[-1] > 0:
+                    output.append(list(j))
+                    self.components_dict[j[0]] = j
+            output_choose = []
+            add_spaces(output)
+            for k in output:
+                output_str = ''
+                for j in k:
+                    output_str += j
+                output_choose.append(output_str)
             make_list_of_str(output)
-            self.combo_boxes.append(ttk.Combobox(self, font=default_font, values=output, width=106, state='readonly'))
+            self.combo_boxes.append(ttk.Combobox(self, font=default_font, values=output_choose, width=106,
+                                                 state='readonly'))
             self.combo_boxes[i].place(x=150, y=68 + i*38)
         vcmd = (self.register(validate), '%P')
         ram_amount = Entry(self, font=default_font, width=3, validate='key', validatecommand=vcmd)
@@ -717,6 +834,24 @@ class App(Tk):
                     res_str += str(j) + '\t'
             if res_str:
                 self.place_output_window(res_str)
+            else:
+                self.place_output_window('SKU not found!')
+
+    def sku_delete(self):
+        sku = self.sku_entry.get()
+        if len(sku) != 4 or not sku.isdecimal() or sku[0] == '0':
+            mb.showinfo('Information', message='SKU is not supported!')
+        else:
+            query = f'''SELECT * FROM find_{names_of_tables[int(sku[0]) - 1]}_with_sku({sku});'''
+            res = my_cursor.execute(query)
+            res_str = ''
+            for i in res:
+                for j in i:
+                    res_str += str(j) + '\t'
+            if res_str:
+                query = f'CALL delete_with_sku_{names_of_tables[int(sku[0]) - 1]}({sku});'
+                my_cursor.execute(query)
+                self.place_output_window(f'Position with sku = {sku} was deleted!\n{res_str}')
             else:
                 self.place_output_window('SKU not found!')
 
@@ -767,12 +902,15 @@ class App(Tk):
         self.sku_search_button.place(x=960, y=520)
         self.buttons_list.append(self.sku_search_button)
 
-        self.sku_entry.place(x=1175, y=495)
-        self.buttons_list.append(self.sku_entry)
+        self.sku_delete_button.place(x=1120, y=520)
+        self.buttons_list.append(self.sku_delete_button)
 
-        self.sku_text.insert(tkinter.INSERT, 'SKU:')
-        self.sku_text.configure(state='disabled')
-        self.sku_text.place(x=1135, y=497)
+        self.sku_entry.place(x=1190, y=495)
+        self.buttons_list.append(self.sku_entry)
+        self.sku_entry.delete(0, tkinter.END)
+        self.sku_entry.insert(0, "")
+
+        self.sku_text.place(x=1150, y=497)
         self.buttons_list.append(self.sku_text)
 
     def create_my_database(self):
@@ -800,21 +938,23 @@ class App(Tk):
         sku_list = []
         customers_list = list(my_cursor.execute('SELECT * FROM return_customer();'))
         for i in range(10):
-            sku_list.append(int(self.combo_boxes[i].get()[0:4]))
+            sku_list.append(self.combo_boxes[i].get()[0:4])
         customer_number = self.customer_phone_entry.get()
         if len(customer_number) != 11 or not customer_number.isdigit():
             mb.showinfo('Information', message='Customer phone number is not supported!')
         elif '' in sku_list:
             mb.showinfo('Information', message='Not all components selected!')
-        elif self.components_dict[sku_list[0]][3] != self.components_dict[sku_list[1]][3] or \
-                self.components_dict[sku_list[3]][3] != self.components_dict[sku_list[1]][5] or \
-                self.components_dict[sku_list[1]][6] < sku_list[9] * self.components_dict[sku_list[3]][6] or \
-                self.components_dict[sku_list[6]][4] == 'm.2' and self.components_dict[sku_list[1]][8] == '0' or \
-                motherboard_form_factor_dict[self.components_dict[sku_list[1]][7]] > \
-                motherboard_form_factor_dict[self.components_dict[sku_list[8]][3]] or \
-                self.components_dict[sku_list[2]][6] > self.components_dict[sku_list[8]][4] or \
-                self.components_dict[sku_list[4]][3] != self.components_dict[sku_list[0]][3] or \
-                self.components_dict[sku_list[0]][7] > self.components_dict[sku_list[4]][4]:
+        elif self.components_dict[int(sku_list[0])][3] != self.components_dict[int(sku_list[1])][3] or \
+                self.components_dict[int(sku_list[3])][3] != self.components_dict[int(sku_list[1])][5] or \
+                self.components_dict[int(sku_list[1])][6] < int(sku_list[9]) * \
+                self.components_dict[int(sku_list[3])][6] or \
+                self.components_dict[int(sku_list[6])][4] == 'm.2' and \
+                self.components_dict[int(sku_list[1])][8] == '0' or \
+                motherboard_form_factor_dict[self.components_dict[int(sku_list[1])][7]] > \
+                motherboard_form_factor_dict[self.components_dict[int(sku_list[8])][3]] or \
+                self.components_dict[int(sku_list[2])][6] > self.components_dict[int(sku_list[8])][4] or \
+                self.components_dict[int(sku_list[0])][3] != self.components_dict[int(sku_list[0])][3] or \
+                self.components_dict[int(sku_list[0])][7] > self.components_dict[int(sku_list[4])][4]:
             # Compares:
             # Proc socket != MoBo socket
             # RAM type != MoBo ram type
@@ -828,6 +968,8 @@ class App(Tk):
         elif self.is_new_customer.get() == 0 and not num_in_list(customer_number, customers_list):
             mb.showinfo('Information', message='There is no such phone number in '
                                                'the list of customers. Add new customer!')
+        elif int(sku_list[9]) > self.components_dict[int(sku_list[3])][8]:
+            mb.showinfo('Information', message='There is no such amount of RAM in stock!')
         else:
             session = Session(my_engine)
             if self.is_new_customer.get() == 1:

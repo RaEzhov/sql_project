@@ -1,7 +1,3 @@
-CREATE PROCEDURE insert_data_to_tables()
-LANGUAGE SQL
-AS $$
-
 INSERT INTO processor
 VALUES
 (1100,	'Intel',	'Celeron G5905',	'LGA 1200',	2,	2,	'Intel UHD graphicss 610',	58,	3999,	10),
@@ -32,12 +28,12 @@ VALUES
 (5200,	'Arctic Cooling',	'Freezer 50 TR',	'TR4',	250,	5299,	1),
 (5300,	'be quiet!',	'PURE ROCK SLIM 2',	'AM4',	130,	2599,	6),
 (5301,	'be quiet!',	'DARK ROCK PRO TR4',	'sTRX4',	250,	7499,	1),
-(5400,	'CoolerMaster',	'Z70',	'AM3+',	95,	750,	3),
+(5400,	'CoolerMaster',	'Z70',	'AM3+',	130,	750,	3),
 (5401,	'CoolerMaster',	'Air Frost Plus',	'AM4',	110,	799,	12),
 (5402,	'CoolerMaster',	'MasterAir MA410M',	'LGA 1151-v2',	150,	4299,	2),
 (5500,	'DEEPCOOL',	'Ice Blade 100',	'LGA 1151-v2',	100,	599,	20),
 (5501,	'DEEPCOOL',	'GAMMAXX 300',	'LGA 1200',	130,	1299,	8),
-(5600,	'Noctua',	'NH-U9 TR4-SP3',	'sTRX4',	180,	8999,	1);
+(5600,	'Noctua',	'NH-U9 TR4-SP3',	'sTRX4',	300,	8999,	1);
 
 
 INSERT INTO power_supply
@@ -127,6 +123,7 @@ VALUES
 (4409,  'Kingston',  'FURY Beast Black RGB',    'DDR4',  16,  2666,  2,  11799,  4),
 (4410,  'Kingston',  'FURY Beast Black',      'DDR4',  8,  3600,  4,  13999,  1),
 (4411,  'Kingston',  'HyperX FURY RGB',      'DDR4',  32,  3600,  4,  55999,  1),
+(4412,  'Kingston',  'FUTY Renegade', 	'DDR5',   8, 4300, 1,	6399, 3),
 (4500,  'Patriot',  'Viper Elite II',      'DDR4',  8,  2666,  1,  2699,  5),
 (4501,  'Patriot',  'Viper 4 Blackout',      'DDR4',  4,  3000,  2,  3399,  3),
 (4502,  'Patriot',  'Viper 4 Blackout',      'DDR4',  8,  3000,  2,  5550,  3),
@@ -185,4 +182,10 @@ VALUES
 ('89053653555', 'Ivanov','Alex'),
 ('89081234567', 'Sidorov', 'Pavel');
 
-$$;
+
+INSERT INTO order_customer (customer_phone, proc_sku, cool_sku, ram_sku, ram_amount, motherboard_sku, graphics_card_sku, 
+        hdd_sku, ssd_sku, power_supply_sku, case_pc_sku, comments, status)
+VALUES
+('89081234567', 1207, 5600, 4201, 2, 2306, 3254, 8205, 7111, 6102, 9600, 'faster', 'in progress'),
+('89030600973', 1205, 5401, 4200, 1, 2305, 3221, 8102, 7210, 6300, 9501, 'want green details', 'in progress');
+('89030600973', 1204, 5400, 4400, 1, 2401, 3260, 8101, 7110, 6200, 9101,'faster, sempai!!!', 'in progress')

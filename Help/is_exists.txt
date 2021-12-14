@@ -1,5 +1,5 @@
 CREATE OR REPLACE FUNCTION is_exists()
-  RETURNS void AS
+  RETURNS int AS
 $func$
 	BEGIN
 IF EXISTS (SELECT 1 FROM pg_database WHERE datname = 'pc_shop') THEN
