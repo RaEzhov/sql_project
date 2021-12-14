@@ -1,0 +1,7 @@
+CREATE OR REPLACE FUNCTION drop_db()
+  RETURNS void AS
+$func$
+BEGIN
+   PERFORM dblink_exec('hostaddr=127.0.0.1 port=5432 dbname=god user=user password=password', 'DROP DATABASE pc_shop');
+END
+$func$ LANGUAGE plpgsql;

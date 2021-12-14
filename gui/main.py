@@ -529,9 +529,12 @@ class App(Tk):
         order_id = self.order_id_entry.get()
         print(order_id)
         print(type(order_id))
-        if order_id.isdigit() and session.execute(f'CALL is_available_order({int(order_id)})') == 1:
-            session.execute(f'''CALL change_status_complete_order({int(order_id)});''')
-            self.place_output_window('Status was changed!')
+        if order_id.isdigit():
+            is_available = list(session.execute(f'SELECT is_available_order({int(order_id)})'))[0][0]
+            print(is_available)
+            if is_available == 1:
+                session.execute(f'''CALL change_status_complete_order({int(order_id)});''')
+                self.place_output_window('Status was changed!')
         else:
             mb.showinfo('Information', message='Order with this ID does not exists or it\'s status not \'in progress\'')
         session.commit()

@@ -1,0 +1,188 @@
+CREATE PROCEDURE insert_data_to_tables()
+LANGUAGE SQL
+AS $$
+
+INSERT INTO processor
+VALUES
+(1100,	'Intel',	'Celeron G5905',	'LGA 1200',	2,	2,	'Intel UHD graphicss 610',	58,	3999,	10),
+(1101,	'Intel',	'Core i3-10100F',	'LGA 1200',	4,	8,	'none',	65,	6499,	11),
+(1102,	'Intel',	'Pentium Gold G6500',	'LGA 1200',	2,	4,	'Intel UHD graphicss 630',	58,	7699,	9),
+(1103,	'Intel',	'Core i5-10400F',	'LGA 1200',	6,	12,	'none',	65,	12799,	4),
+(1104,	'Intel',	'Core i7-9700',	'LGA 1151-v2',	8,	8,	'Intel UHD graphicss 630',	65,	23499,	3),
+(1105,	'Intel',	'Core i5-12600K',	'LGA 1700',	10,	16,	'Intel UHD graphicss 770',	215,	25799,	3),
+(1106,	'Intel',	'Core i7-11700F',	'LGA 1200',	8,	16,	'none',	65,	25699,	5),
+(1107,	'Intel',	'Core i7-12700KF',	'LGA 1700',	12,	20,	'none',	125,	36499,	3),
+(1108,	'Intel',	'Core i9-11900',	'LGA 1200',	8,	16,	'Intel UHD graphicss 750',	65,	36799,	2),
+(1109,	'Intel',	'Core i9-10980XE',	'LGA 2066',	18,	36,	'none',	165,	87499,	1),
+(1200,	'AMD',	'Ryzen 3 4300GE',	'AM4',	4,	8,	'Radeon Vega 6',	35,	15799,	12),
+(1201,	'AMD',	'Ryzen Threadripper 1920X',	'TR4',	12,	24,	'none',	180,	15299,	3),
+(1202,	'AMD',	'Ryzen 5 3600',	'AM4',	6,	12,	'none',	65,	20399,	5),
+(1203,	'AMD',	'Ryzen 7 3800X',	'AM4',	8,	16,	'none',	105,	28499,	1),
+(1204,	'AMD',	'FX-4320',	'AM3+',	4,	4,	'none',	125,	2999,	1),
+(1205,	'AMD',	'Ryzen 5 5600X',	'AM4',	6,	12,	'none',	65,	25999,	2),
+(1206,	'AMD',	'Ryzen 7 5800X',	'AM4',	8,	16,	'none',	105,	35999,	3),
+(1207,	'AMD',	'Ryzen Threadripper 3990X',	'sTRX4',	64,	128,	'none',	280,	349999,	1),
+(1208,	'AMD',	'Ryzen 9 5950X',	'AM4',	16,	32,	'none',	105,	71999,	2);
+
+
+
+INSERT INTO cooling
+VALUES
+(5100,	'AeroCool',	'Verkho 2',	'LGA 1200',	110,	899,	7),
+(5200,	'Arctic Cooling',	'Freezer 50 TR',	'TR4',	250,	5299,	1),
+(5300,	'be quiet!',	'PURE ROCK SLIM 2',	'AM4',	130,	2599,	6),
+(5301,	'be quiet!',	'DARK ROCK PRO TR4',	'sTRX4',	250,	7499,	1),
+(5400,	'CoolerMaster',	'Z70',	'AM3+',	95,	750,	3),
+(5401,	'CoolerMaster',	'Air Frost Plus',	'AM4',	110,	799,	12),
+(5402,	'CoolerMaster',	'MasterAir MA410M',	'LGA 1151-v2',	150,	4299,	2),
+(5500,	'DEEPCOOL',	'Ice Blade 100',	'LGA 1151-v2',	100,	599,	20),
+(5501,	'DEEPCOOL',	'GAMMAXX 300',	'LGA 1200',	130,	1299,	8),
+(5600,	'Noctua',	'NH-U9 TR4-SP3',	'sTRX4',	180,	8999,	1);
+
+
+INSERT INTO power_supply
+VALUES
+(6100,	'be quiet!',	'SYSTEM POWER 9 400W',	400,	3950,	4),
+(6101,	'be quiet!',	'DARK POWER 12 750W',	750,	19999,	3),
+(6102,	'be quiet!',	'DARK POWER 12 1200W',	1200,	39999,	1),
+(6200,	'Corsair',	'VS350',	350,	3699,	6),
+(6201,	'Corsair',	'CX550F RGB',	550,	6049,	7),
+(6202,	'Corsair',	'TX850M',	850,	12999,	2),
+(6300,	'Cougar',	'STE 600W',	600,	2799,	4),
+(6301,	'Cougar',	'STX750',	750,	4999,	3),
+(6400,	'DEEPCOOL',	'DE600 v2',	450,	2750,	3),
+(6500,	'EVGA',	'550 N1',	550,	4999,	4),
+(6501,	'EVGA',	'700 BR',	700,	6399,	4),
+(6600,	'FSP',	'PNR PRO 400W',	400,	2599,	5),
+(6700,	'Seasonic',	'S12III-650',	650,	5950,	5),
+(6800,	'Thermaltake',	'Litepower RGB 450W',	450,	3099,	2),
+(6801,	'Thermaltake',	'Smart PRO RGB 750W',	750,	7899,	3);
+
+
+INSERT INTO graphics_card
+VALUES
+(3120,	'AMD',	'GIGABYTE',	'RX 6600 XT GAMING OC PRO',	8,	'GDDR6',	282,	76999,	2),
+(3121,	'AMD',	'GIGABYTE',	'RX 5600 XT WINDFORCE OC',	6,	'GDDR6',	228,	88999,	1),
+(3140,	'AMD',	'MSI',	'RX 6600 ARMOR',	8,	'GDDR6',	238,	69999,	5),
+(3141,	'AMD',	'MSI',	'RX 6700 XT GAMING X',	12,	'GDDR6',	279,	119999,	4),
+(3210,	'NVIDIA',	'ASUS',	'GTX 1660 PHOENIX OC',	6,	'GDDR5',	174,	59999,	4),
+(3211,	'NVIDIA',	'ASUS',	'GTX 1660Ti TUF Gaming EVO OC EDITION',	6,	'GDDR6',	206,	65999,	3),
+(3220,	'NVIDIA',	'GIGABYTE',	'RTX 2060 D6 6G',	6,	'GDDR6',	226,	69999,	2),
+(3221,	'NVIDIA',	'GIGABYTE',	'RTX 3080 Ti AORUS MASTER',	12,	'GDDR6X',	319,	199999,	1),
+(3230,	'NVIDIA',	'KFA2',	'GTX 1050Ti 1-Click OC',	4,	'GDDR5',	196,	27999,	3),
+(3240,	'NVIDIA',	'MSI',	'GT 1030 LP OC',	2,	'GDDR4',	150,	8999,	10),
+(3241,	'NVIDIA',	'MSI',	'GTX 1660 SUPER Gaming X',	6,	'GDDR6',	247,	72999,	3),
+(3242,	'NVIDIA',	'MSI',	'RTX 3060 Ti VENTUS 2X OCV1',	8,	'GDDR6',	235,	94999,	4),
+(3243,	'NVIDIA',	'MSI',	'RTX 3080 GAMING Z TRIO',	10,	'GDDR6X',	323,	169999,	1),
+(3250,	'NVIDIA',	'Palit',	'RTX 3060 DUAL',	12,	'GDDR6',	245,	73999,	2),
+(3251,	'NVIDIA',	'Palit',	'RTX 3070 JetStream',	8,	'GDDR6',	304,	109999,	2),
+(3252,	'NVIDIA',	'Palit',	'RTX 3070 Ti GameRock',	8,	'GDDR6X',	304,	134999,	1),
+(3253,	'NVIDIA',	'Palit',	'RTX 3080 GameRock',	10,	'GDDR6X',	304,	244999,	1),
+(3254,	'NVIDIA',	'Palit',	'RTX 3090 GameRock',	24,	'GDDR6X',	304,	319999,	1),
+(3260,	'NVIDIA',	'ZOTAC',	'GT 730 Zone Edition',	2,	'GDDR3',	146,	5999,	4);
+
+
+INSERT INTO motherboard
+VALUES
+(2400,	'ASRock',	'B365M PRO4',	'LGA 1151-v2',	'B365',	'DDR4',	4,	'Micro-ATX',	2,	6099,	1),
+(2401,	'ASRock',	'760GM-HDV',	'AM3+',	'760G',	'DDR3',	2,	'Micro-ATX',	0,	5499,	1),
+(2402,	'ASRock',	'X370 Pro4',	'AM4',	'X370',	'DDR4',	4,	'Standart-ATX',	2,	6999,	1),
+(2403,	'ASRock',	'B550 Pro4',	'AM4',	'B550',	'DDR4',	4,	'Standart-ATX',	2,	10099,	1),
+(2404,	'ASRock',	'X570 Taichi Razer Edition',	'AM4',	'X570',	'DDR4',	4,	'Standart-ATX',	3,	31999,	1),
+(2200,	'ASUS',	'PRIME H510M-R',	'LGA 1200',	'H510',	'DDR4',	2,	'Micro-ATX',	0,	5599,	2),
+(2201,	'ASUS',	'ROG STRIX B560-G GAMING WIFI',	'LGA 1200',	'B560',	'DDR4',	4,	'Micro-ATX',	2,	15199,	1),
+(2202,	'ASUS',	'ROG MAXIMUS XIII HERO',	'LGA 1200',	'Z590',	'DDR4',	4,	'Standart-ATX',	4,	39999,	1),
+(2203,	'ASUS',	'TUF Z390-PLUS GAMING',	'LGA 1151-v2',	'Z390',	'DDR4',	4,	'Standart-ATX',	2,	12899,	1),
+(2204,	'ASUS',	'PRIME B450-PLUS',	'AM4',	'B450',	'DDR4',	4,	'Standart-ATX',	1,	6350,	2),
+(2205,	'ASUS',	'ROG ZENITH EXTREME',	'TR4',	'X399',	'DDR4',	8,	'E-ATX',	1,	44999,	1),
+(2300,	'GIGABYTE',	'Z490 UD',	'LGA 1200',	'Z490',	'DDR4',	4,	'Standart-ATX',	2,	9999,	2),
+(2301,	'GIGABYTE',	'X299X AORUS MASTER',	'LGA 2066',	'X299',	'DDR4',	8,	'E-ATX',	2,	37999,	1),
+(2302,	'GIGABYTE',	'Z690 UD', 	'LGA 1700',	'Z690',	'DDR5',	4,	'Standart-ATX',	3,	17599,	2),
+(2303,	'GIGABYTE',	'Z690 AORUS MASTER',	'LGA 1700',	'Z690',	'DDR5',	4,	'E-ATX',	5,	39999,	1),
+(2304,	'GIGABYTE',	'A520I AC',	'AM4',	'A520',	'DDR4',	2,	'Mini-ITX',	1,	7999,	2),
+(2305,	'GIGABYTE',	'X570 I AORUS PRO WIFI',	'AM4',	'X570',	'DDR4',	2,	'Mini-ITX',	3,	14999,	1),
+(2306,	'GIGABYTE',	'TRX40 AORUS XTREME',	'sTRX4',	'TRX40',	'DDR4',	8,	'XL-ATX',	4,	79999,	1),
+(2100,	'MSI',	'H410M PRO-E',	'LGA 1200',	'H410',	'DDR4',	2,	'Micro-ATX',	0,	5199,	6),
+(2101,	'MSI',	'B560M-A PRO',	'LGA 1200',	'B560',	'DDR4',	2,	'Micro-ATX',	1,	6499,	3),
+(2102,	'MSI',	'B450M-A PRO MAX',	'AM4',	'B450',	'DDR4',	2,	'Micro-ATX',	1,	4099,	2);
+
+
+INSERT INTO ram
+VALUES
+(4100,  'Crucial', NULL,            'DDR4',  4,  2666,  1,  1599,  12),
+(4101,  'Crucial',   NULL,             'DDR4',  8,  3400,  1,  2699,  8),
+(4200,  'G.Skill',  'TRIDENT Z',        'DDR4',  8,  3200,  2,  6799,  1),
+(4201,  'G.Skill',  'TRIDENT Z Neo RGB',    'DDR4',  32,  3600,  4,  51999,  1),
+(4300,  'Hynix',  NULL,             'DDR4',  8,  3200,  1,  2599,  13),
+(4301,  'Hynix',  NULL,             'DDR4',  16,  2666,  1,  4999,  8),
+(4400,  'Kingston',  'ValueRAM',         'DDR3',  2,  1600,  1,  1650,  4),
+(4401,  'Kingston',  'HyperX FURY Black Series',  'DDR3',  4,  1866,  1,  2399,  5),
+(4402,  'Kingston',  'HyperX FURY Beast Black',  'DDR3',  8,  1866,  2,  10999,  2),
+(4403,  'Kingston',  'FURY Beast Black',      'DDR4',  4,  2666,  1,  2199,  4),
+(4404,  'Kingston',  'HyperX FURY Black',     'DDR4',  4,  3000,  1,  2299,  5),
+(4405,  'Kingston',  'ValueRAM',          'DDR4',  8,  2666,  1,  2450,  7),
+(4406,  'Kingston',  'FURY Beast Black RGB',    'DDR4',  8,  3000,  1,  3399,  4),
+(4407,  'Kingston',  'HyperX FURY Black',    'DDR4',  8,  3600,  1,  4099,  5),
+(4408,  'Kingston',  'HyperX FURY Black',    'DDR4',  32,  2400,  1,  10999,  3),
+(4409,  'Kingston',  'FURY Beast Black RGB',    'DDR4',  16,  2666,  2,  11799,  4),
+(4410,  'Kingston',  'FURY Beast Black',      'DDR4',  8,  3600,  4,  13999,  1),
+(4411,  'Kingston',  'HyperX FURY RGB',      'DDR4',  32,  3600,  4,  55999,  1),
+(4500,  'Patriot',  'Viper Elite II',      'DDR4',  8,  2666,  1,  2699,  5),
+(4501,  'Patriot',  'Viper 4 Blackout',      'DDR4',  4,  3000,  2,  3399,  3),
+(4502,  'Patriot',  'Viper 4 Blackout',      'DDR4',  8,  3000,  2,  5550,  3),
+(4503,  'Patriot',  'Viper Elite II',      'DDR4',  8,  3600,  2,  5699,  2),
+(4504,  'Patriot',  'Viper RGB',        'DDR4',  8,  4000,  2,  9999,  4),
+(4601,  'Samsung',   NULL,             'DDR4',  4,  3200,  1,  1899,  9),
+(4602,  'Samsung',   NULL,             'DDR4',  8,  2933,  1,  2899,  7);
+
+
+INSERT INTO solid_state_drive
+VALUES
+(7110,	'Kingston',	'A400',	480,	'"2.5"',	3699,	6),
+(7111,	'Kingston',	'KC600',	1024,	'"2.5"',	11499,	3),
+(7120,	'Kingston',	'A400',	240,	'm.2',	1799,	4),
+(7121,	'Kingston',	'KC2500',	250,	'm.2',	3499,	3),
+(7122,	'Kingston',	'KC2500',	1000,	'm.2',	9899,	4),
+(7210,	'Samsung',	'870 EVO',	250,	'"2.5"',	5099,	8),
+(7211,	'Samsung',	'870 QVO',	4000,	'"2.5"',	36499,	1),
+(7220,	'Samsung',	'860 EVO',	250,	'm.2',	4199,	7),
+(7221,	'Samsung',	'980',	500,	'm.2',	6199,	3);
+
+
+INSERT INTO hard_disc_drive
+VALUES
+(8100,	'Seagate',	'BarraCuda',	1000,	7200,	'"3.5"',	3299,	7),
+(8101,	'Seagate',	'BarraCuda Pro',	500,	7200,	'"2.5"',	3199,	3),
+(8102,	'Seagate',	'BarraCuda',	2000,	5400,	'"2.5"',	5999,	5),
+(8103,	'Seagate',	'SkyHawk',	3000,	5400,	'"3.5"',	7299,	5),
+(8200,	'WD',	'Blue',	500,	5400,	'"3.5"',	2599,	4),
+(8201,	'WD',	'Blue',	500,	7200,	'"3.5"',	2699,	8),
+(8202,	'WD',	'Blue',	1000,	5400,	'"3.5"',	3099,	6),
+(8203,	'WD',	'Black',	1000,	7200,	'"3.5"',	5499,	4),
+(8204,	'WD',	'Blue Mobile',	500,	5400,	'"2.5"',	2950,	5),
+(8205,	'WD',	'Red Plus',	3000,	5400,	'"3.5"',	6499,	6);
+
+
+INSERT INTO case_pc
+VALUES
+(9100,	'Aerocool',	'Bolt Mini',	'Micro-ATX',	318,	2899,	3),
+(9101,	'Aerocool',	'Glider-G',	'Standart-ATX',	325,	3099,	2),
+(9200,	'be quiet!',	'PURE BASE 500 Window',	'Standart-ATX',	369,	7899,	4),
+(9300,	'CoolerMaster',	'MasterBox K501L',	'Standart-ATX',	410,	3599,	4),
+(9400,	'Corsair',	'Carbide Series SPEC-DELTA RGB',	'Standatr-ATX',	330,	4999,	5),
+(9500,	'Cougar',	'MG120-G',	'Micro-ATX',	330,	2999,	5),
+(9501,	'Cougar',	'QBX',	'Mini-ITX',	350,	4450,	4),
+(9600,	'DEEPCOOL',	'E_SHIELD',	'E-ATX',	370,	3750,	2),
+(9601,	'DEEPCOOL',	'MATREXX 55 MESH ADD-RGB 4F',	'Standart-ATX',	370,	5950,	4),
+(9700,	'Fractal Design',	'Core 2300',	'Standart-ATX',	380,	5199,	2),
+(9800,	'NZXT',	'H510',	'Standart-ATX',	381,	6499,	2),
+(9900,	'Thermaltake',	'Versa T35 TG RGB',	'Standart-ATX',	300,	4699,	3),
+(9901,	'Thermaltake',	'The Tower 100',	'Mini-ITX',	330,	8799,	1);
+
+
+INSERT INTO customer
+VALUES
+('89053653555', 'Ivanov','Alex'),
+('89081234567', 'Sidorov', 'Pavel');
+
+$$;

@@ -1,0 +1,667 @@
+
+CREATE OR REPLACE FUNCTION create_db()
+  RETURNS void AS
+$func$
+BEGIN
+IF EXISTS (SELECT 1 FROM pg_database WHERE datname = 'pc_shop') THEN
+   RAISE NOTICE 'Database already exists'; 
+ELSE
+   PERFORM dblink_exec('hostaddr=127.0.0.1 port=5432 dbname=god user=user password=password', 'CREATE DATABASE pc_shop');
+   PERFORM dblink_exec('hostaddr=127.0.0.1 port=5432 dbname=pc_shop user=user password=password', 'CREATE TABLE processor
+															(sku INT NOT NULL,
+															 brand VARCHAR(50) NOT NULL,
+															 model VARCHAR(50) NOT NULL,
+															 socket VARCHAR(50) NOT NULL,
+															 number_of_cores INT NOT NULL,
+															 number_of_threads INT NOT NULL,
+															 integrated_graphics_processor VARCHAR(50) NOT NULL,
+															 tdp INT NOT NULL,
+															 price INT NOT NULL, 
+															 amount INT NOT NULL
+															);
+					   										CREATE TABLE cooling
+															(sku INT NOT NULL, 
+															brand VARCHAR(50) NOT NULL, 
+															model VARCHAR(50) NOT NULL, 
+															socket VARCHAR(50) NOT NULL,						 
+															tdp INT NOT NULL, 
+															price INT NOT NULL, 
+															amount INT NOT NULL
+															);
+
+															CREATE TABLE motherboard
+															(sku INT NOT NULL, 
+															brand VARCHAR(50) NOT NULL, 
+															model VARCHAR(50) NOT NULL, 
+															socket VARCHAR(50) NOT NULL,
+															chipset VARCHAR(50) NOT NULL, 
+															mem_type VARCHAR(50) NOT NULL,
+															num_mem_slots INT NOT NULL,
+															form_factor VARCHAR(50) NOT NULL, 
+															m2_slot INT NOT NULL,
+															price INT NOT NULL, 
+															amount INT NOT NULL
+															);
+
+															CREATE TABLE ram
+															(sku INT NOT NULL, 
+															brand VARCHAR(50) NOT NULL, 
+															model VARCHAR(50), 
+															mem_type VARCHAR(50) NOT NULL, 
+															mem_capacity INT NOT NULL, 
+															frequency INT NOT NULL, 
+															num_of_modules INT NOT NULL, 
+															price INT NOT NULL, 
+															amount INT NOT NULL
+															);
+
+															CREATE TABLE graphics_card
+															(sku INT NOT NULL,
+															chip_manufacturer VARCHAR(50) NOT NULL,
+															brand VARCHAR(50) NOT NULL,
+															model VARCHAR(50) NOT NULL,
+															mem_capacity INT NOT NULL,
+															mem_type VARCHAR(50) NOT NULL,
+															length INT NOT NULL,
+															price INT NOT NULL,
+															amount INT NOT NULL
+															);
+
+															CREATE TABLE power_supply
+															(sku INT NOT NULL, 
+															brand VARCHAR(50) NOT NULL, 
+															model VARCHAR(50) NOT NULL, 
+															output_power INT NOT NULL,
+															price INT NOT NULL, 
+															amount INT NOT NULL
+															);
+
+
+															CREATE TABLE case_pc
+															(sku INT NOT NULL, 
+															brand VARCHAR(50) NOT NULL, 
+															model VARCHAR(50) NOT NULL, 
+															form_factor VARCHAR(50) NOT NULL,
+															graphics_card_lenght INT NOT NULL, 
+															price INT NOT NULL, 
+															amount INT NOT NULL
+															);
+
+
+															CREATE TABLE hard_disc_drive
+															(sku INT NOT NULL, 
+															brand VARCHAR(50) NOT NULL, 
+															model VARCHAR(50) NOT NULL, 
+															capacity INT NOT NULL, 
+															rotation_speed INT NOT NULL, 
+															form_factor VARCHAR(50) NOT NULL,
+															price INT NOT NULL, 
+															amount INT NOT NULL
+															);
+
+
+															CREATE TABLE solid_state_drive
+															(sku INT NOT NULL, 
+															brand VARCHAR(50) NOT NULL,
+															model VARCHAR(50) NOT NULL, 
+															capacity INT NOT NULL, 
+															form_factor VARCHAR(50),
+															price INT NOT NULL, 
+															amount INT NOT NULL
+															);
+
+															CREATE TABLE order_customer
+															(order_id SERIAL NOT NULL, 
+															customer_phone VARCHAR(15) NOT NULL, 
+															proc_sku INT NOT NULL, 
+															cool_sku INT NOT NULL, 
+															ram_sku INT NOT NULL, 
+															ram_amount INT NOT NULL, 
+															motherboard_sku INT NOT NULL, 
+															graphics_card_sku INT NOT NULL, 
+															hdd_sku INT NOT NULL, 
+															ssd_sku INT NOT NULL, 
+															power_supply_sku INT NOT NULL, 
+															case_pc_sku INT NOT NULL, 
+															comments VARCHAR(300) NOT NULL, 
+															status VARCHAR(50) NOT NULL, 
+															total_price INT 
+															);
+
+
+
+
+															CREATE TABLE customer
+															(phone_number VARCHAR(15) NOT NULL, 
+															first_name VARCHAR(30) NOT NULL, 
+															last_name VARCHAR(30) NOT NULL
+															);');
+	PERFORM dblink_exec('hostaddr=127.0.0.1 port=5432 dbname=pc_shop user=user password=password', 'CREATE OR REPLACE FUNCTION f_total_price()
+																									  RETURNS trigger AS
+																									$$
+																									BEGIN
+																											 UPDATE order_customer
+																											 SET total_price = ((SELECT price FROM processor WHERE processor.sku = (select proc_sku
+																																			from order_customer
+																																			order by order_id DESC
+																																			limit 1)) +
+																													(SELECT price FROM cooling WHERE cooling.sku = (select cool_sku
+																																			from order_customer
+																																			order by order_id DESC
+																																			limit 1)) +
+																																(SELECT price FROM motherboard WHERE motherboard.sku = (select motherboard_sku
+																																			from order_customer
+																																			order by order_id DESC
+																																			limit 1)) +
+																													(SELECT price FROM graphics_card WHERE graphics_card.sku = (select graphics_card_sku
+																																			from order_customer
+																																			order by order_id DESC
+																																			limit 1)) +
+																														(SELECT ram_amount from order_customer order by order_id DESC limit 1)*(SELECT price FROM ram WHERE ram.sku = (select ram_sku
+																																					from order_customer
+																																					order by order_id DESC
+																																					limit 1)) +
+																														(SELECT price FROM hard_disc_drive WHERE hard_disc_drive.sku = (select hdd_sku
+																																				from order_customer
+																																				order by order_id DESC
+																																				limit 1)) +
+																													(SELECT price FROM solid_state_drive WHERE solid_state_drive.sku = (select ssd_sku
+																																				from order_customer
+																																				order by order_id DESC
+																																				limit 1)) +
+																													(SELECT price FROM power_supply WHERE power_supply.sku = (select power_supply_sku
+																																				from order_customer
+																																				order by order_id DESC
+																																				limit 1)) +
+																													(SELECT price FROM case_pc WHERE case_pc.sku = (select case_pc_sku
+																																				from order_customer
+																																				order by order_id DESC
+																																				limit 1)))
+																										 WHERE order_customer.order_id = (select order_id
+																														  from order_customer
+																														  order by order_id DESC
+																														  limit 1);
+																									 
+																										RETURN NEW;
+																									END;
+																									$$ LANGUAGE plpgsql;
+
+
+																									CREATE TRIGGER after_Insert_f_total_price
+																									  AFTER INSERT
+																									  ON order_customer
+																									  FOR EACH STATEMENT
+																									  EXECUTE PROCEDURE f_total_price();');
+		PERFORM dblink_exec('hostaddr=127.0.0.1 port=5432 dbname=pc_shop user=user password=password', 'SET ENABLE_SeqScan  = OFF;
+																										CREATE INDEX find_proc ON processor (sku);
+																										CREATE INDEX find_cool ON cooling (sku);
+																										CREATE INDEX find_hdd ON hard_disc_drive (sku);
+																										CREATE INDEX find_ssd ON solid_state_drive (sku);
+																										CREATE INDEX find_gpu ON graphics_card (sku);
+																										CREATE INDEX find_motherboard ON motherboard (sku);
+																										CREATE INDEX find_ram ON ram (sku);
+																										CREATE INDEX find_case_pc ON case_pc (sku);
+																										CREATE INDEX find_power_supply ON power_supply (sku);');
+       PERFORM dblink_exec('hostaddr=127.0.0.1 port=5432 dbname=pc_shop user=user password=password', 'CREATE PROCEDURE clear_all_tables()
+																										LANGUAGE SQL
+																										AS $$
+																											DELETE from processor;
+																											DELETE from cooling;
+																											DELETE from motherboard;
+																											DELETE from ram;
+																											DELETE from power_supply;
+																											DELETE from order_customer;
+																											DELETE from customer;
+																											DELETE from graphics_card;
+																											DELETE from case_pc;
+																											DELETE from hard_disc_drive;
+																											DELETE from solid_state_drive;
+																										$$;');
+	 PERFORM dblink_exec('hostaddr=127.0.0.1 port=5432 dbname=pc_shop user=user password=password', 'CREATE PROCEDURE clear_proc()
+																										LANGUAGE SQL
+																										AS $$
+																											DELETE from processor;
+																										$$;
+
+																										CREATE PROCEDURE clear_gpu()
+																										LANGUAGE SQL
+																										AS $$
+																											DELETE from graphics_card;
+																										$$;
+
+																										CREATE PROCEDURE clear_motherboard()
+																										LANGUAGE SQL
+																										AS $$
+																											DELETE from motherboard;
+																										$$;
+
+																										CREATE PROCEDURE clear_cool()
+																										LANGUAGE SQL
+																										AS $$
+																											DELETE from cooling;
+																										$$;
+
+																										CREATE PROCEDURE clear_ram()
+																										LANGUAGE SQL
+																										AS $$
+																											DELETE from ram;
+																										$$;
+
+																										CREATE PROCEDURE clear_ssd()
+																										LANGUAGE SQL
+																										AS $$
+																											DELETE from solid_state_drive;
+																										$$;
+
+																										CREATE PROCEDURE clear_hdd()
+																										LANGUAGE SQL
+																										AS $$
+																											DELETE from hard_disc_drive;
+																										$$;
+
+																										CREATE PROCEDURE clear_power_supply()
+																										LANGUAGE SQL
+																										AS $$
+																											DELETE from power_supply;
+																										$$;
+
+																										CREATE PROCEDURE clear_case_pc()
+																										LANGUAGE SQL
+																										AS $$
+																											DELETE from case_pc;
+																										$$;');
+		PERFORM dblink_exec('hostaddr=127.0.0.1 port=5432 dbname=pc_shop user=user password=password', 'CREATE PROCEDURE insert_proc(sku_arg INT, brand_arg VARCHAR(50), model_arg VARCHAR(50), socket_arg VARCHAR(50), number_of_cores_arg INT,
+						  number_of_threads_arg INT, integrated_graphicss_processor_arg VARCHAR(50), tdp_arg INT, price_arg INT, amount_arg INT)
+																										LANGUAGE SQL
+																										AS $$
+																											INSERT INTO processor
+																											VALUES
+																											(sku_arg, brand_arg, model_arg, socket_arg, number_of_cores_arg, number_of_threads_arg, integrated_graphicss_processor_arg, tdp_arg, price_arg, amount_arg);
+																										$$;
+
+																										CREATE PROCEDURE insert_cool(sku_arg INT, brand_arg VARCHAR(50), model_arg VARCHAR(50), socket_arg VARCHAR(50),
+																																			 tdp_arg INT, price_arg INT, amount_arg INT)
+																										LANGUAGE SQL
+																										AS $$
+																											INSERT INTO cooling
+																											VALUES
+																											(sku_arg, brand_arg, model_arg, socket_arg, tdp_arg, price_arg, amount_arg);
+																										$$;
+
+																										CREATE PROCEDURE insert_motherboard(sku_arg INT, brand_arg VARCHAR(50), model_arg VARCHAR(50), socket_arg VARCHAR(50),
+																																			 chipset_arg VARCHAR(50), mem_type_arg VARCHAR(50), num_mem_slots_arg INT, form_factor_arg VARCHAR(50), m2_slot_arg INT,
+																																			 price_arg INT, amount_arg INT)
+																										LANGUAGE SQL
+																										AS $$
+																											INSERT INTO motherboard
+																											VALUES
+																											(sku_arg, brand_arg, model_arg, socket_arg, chipset_arg, mem_type_arg, num_mem_slots_arg, form_factor_arg, m2_slot_arg, price_arg, amount_arg);
+																										$$;
+
+																										CREATE PROCEDURE insert_gpu(sku_arg INT, chip_manufacturer_arg VARCHAR(50), brand_arg VARCHAR(50), model_arg VARCHAR(50), mem_capacity_arg INT,
+																															  mem_type_arg VARCHAR(50), length_arg INT, price_arg INT, amount_arg INT)
+																										LANGUAGE SQL
+																										AS $$
+																											INSERT INTO graphics_card
+																											VALUES
+																											(sku_arg, chip_manufacturer_arg, brand_arg, model_arg, mem_capacity_arg, mem_type_arg, length_arg, price_arg, amount_arg);
+																										$$;
+
+																										CREATE PROCEDURE insert_ram(sku_arg INT, brand_arg VARCHAR(50), model_arg VARCHAR(50), mem_type_arg VARCHAR(50), mem_capacity_arg INT,
+																																			 frequency_arg INT, num_of_modules_arg INT, price_arg INT, amount_arg INT)
+																										LANGUAGE SQL
+																										AS $$
+																											INSERT INTO ram
+																											VALUES
+																											(sku_arg, brand_arg, model_arg, mem_type_arg, mem_capacity_arg, frequency_arg, num_of_modules_arg,  price_arg, amount_arg);
+																										$$;
+
+																										CREATE PROCEDURE insert_power_supply(sku_arg INT, brand_arg VARCHAR(50), model_arg VARCHAR(50), output_power_arg INT,
+																																				  price_arg INT, amount_arg INT)
+																										LANGUAGE SQL
+																										AS $$
+																											INSERT INTO power_supply
+																											VALUES
+																											(sku_arg, brand_arg, model_arg, output_power_arg, price_arg, amount_arg);
+																										$$;
+
+																										CREATE PROCEDURE insert_case_pc(sku_arg INT, brand_arg VARCHAR(50), model_arg VARCHAR(50), form_factor_arg VARCHAR(50),
+																															graphics_card_lenght_arg INT, price_arg INT, amount_arg INT)
+																										LANGUAGE SQL
+																										AS $$
+																											INSERT INTO case_pc
+																											VALUES
+																											(sku_arg, brand_arg, model_arg, form_factor_arg, graphics_card_lenght_arg, price_arg, amount_arg);
+																										$$;
+
+																										CREATE PROCEDURE insert_hdd(sku_arg INT, brand_arg VARCHAR(50), model_arg VARCHAR(50), capacity_arg INT, rotation_speed_arg INT, form_factor_arg VARCHAR(50),
+																																				 price_arg INT, amount_arg INT)
+																										LANGUAGE SQL
+																										AS $$
+																											INSERT INTO hard_disc_drive
+																											VALUES
+																											(sku_arg, brand_arg, model_arg, capacity_arg, rotation_speed_arg, form_factor_arg, price_arg, amount_arg);
+																										$$;
+
+																										CREATE PROCEDURE insert_ssd(sku_arg INT, brand_arg VARCHAR(50), model_arg VARCHAR(50), capacity_arg INT, form_factor_arg VARCHAR(50),
+																																				 price_arg INT, amount_arg INT)
+																										LANGUAGE SQL
+																										AS $$
+																											INSERT INTO solid_state_drive
+																											VALUES
+																											(sku_arg, brand_arg, model_arg, capacity_arg, form_factor_arg, price_arg, amount_arg);
+																										$$;
+
+																										CREATE PROCEDURE insert_order_customer(customer_phone_arg VARCHAR(15), proc_sku_arg INT, cool_sku_arg INT, ram_sku_arg INT,
+																																		   ram_amount_arg INT, motherboard_sku_arg INT, graphics_card_sku_arg INT, hdd_sku_arg INT,
+																																		  ssd_sku_arg INT, power_supply_sku_arg INT, case_pc_sku_arg INT, comments_arg VARCHAR(300), status_arg VARCHAR(50))
+																										LANGUAGE SQL
+																										AS $$
+																											INSERT INTO order_customer (customer_phone, proc_sku, cool_sku, ram_sku,
+																																		   ram_amount, motherboard_sku, graphics_card_sku, hdd_sku,
+																																		  ssd_sku, power_supply_sku, case_pc_sku, comments, status)
+																											VALUES
+																											(customer_phone_arg, proc_sku_arg, cool_sku_arg, ram_sku_arg,
+																																		   ram_amount_arg, motherboard_sku_arg, graphics_card_sku_arg, hdd_sku_arg,
+																																		  ssd_sku_arg, power_supply_sku_arg, case_pc_sku_arg, comments_arg, status_arg);
+																											UPDATE processor
+																											SET amount = amount - 1
+																											WHERE processor.sku = proc_sku_arg;
+
+																											UPDATE cooling
+																											SET amount = amount - 1
+																											WHERE cooling.sku = cool_sku_arg;
+
+																											UPDATE ram
+																											SET amount = amount - ram_amount_arg
+																											WHERE ram.sku = ram_sku_arg;
+
+																											UPDATE motherboard
+																											SET amount = amount - 1
+																											WHERE motherboard.sku = motherboard_sku_arg;
+
+																											UPDATE graphics_card
+																											SET amount = amount - 1
+																											WHERE graphics_card.sku = graphics_card_sku_arg;
+
+																											UPDATE hard_disc_drive
+																											SET amount = amount - 1
+																											WHERE hard_disc_drive.sku = hdd_sku_arg;
+
+																											UPDATE solid_state_drive
+																											SET amount = amount - 1
+																											WHERE solid_state_drive.sku = ssd_sku_arg;
+
+																											UPDATE power_supply
+																											SET amount = amount - 1
+																											WHERE power_supply.sku = power_supply_sku_arg;
+
+																											UPDATE case_pc
+																											SET amount = amount - 1
+																											WHERE case_pc.sku = case_pc_sku_arg;
+																										$$;
+
+																										CREATE PROCEDURE insert_customer(phone_number_arg VARCHAR(15), first_name_arg VARCHAR(30), last_name_arg VARCHAR(30))
+																										LANGUAGE SQL
+																										AS $$
+																											INSERT INTO customer
+																											VALUES
+																											(phone_number_arg, first_name_arg, last_name_arg);
+																										$$;');
+	PERFORM dblink_exec('hostaddr=127.0.0.1 port=5432 dbname=pc_shop user=user password=password', 'CREATE FUNCTION return_proc() RETURNS SETOF processor AS $$
+																									  SELECT *
+																									  FROM processor;
+																									$$ LANGUAGE SQL;
+
+
+																									CREATE FUNCTION return_case_pc() RETURNS SETOF case_pc AS $$
+																									  SELECT *
+																									  FROM case_pc;
+																									$$ LANGUAGE SQL;
+
+
+																									CREATE FUNCTION return_cool() RETURNS SETOF cooling AS $$
+																									  SELECT *
+																									  FROM cooling;
+																									$$ LANGUAGE SQL;
+
+
+																									CREATE FUNCTION return_customer() RETURNS SETOF customer AS $$
+																									  SELECT *
+																									  FROM customer;
+																									$$ LANGUAGE SQL;
+
+
+																									CREATE FUNCTION return_gpu() RETURNS SETOF graphics_card AS $$
+																									  SELECT *
+																									  FROM graphics_card;
+																									$$ LANGUAGE SQL;
+
+
+																									CREATE FUNCTION return_hdd() RETURNS SETOF hard_disc_drive AS $$
+																									  SELECT *
+																									  FROM hard_disc_drive;
+																									$$ LANGUAGE SQL;
+
+
+																									CREATE FUNCTION return_motherboard() RETURNS SETOF motherboard AS $$
+																									  SELECT *
+																									  FROM motherboard;
+																									$$ LANGUAGE SQL;
+
+
+																									CREATE FUNCTION return_order_customer() RETURNS SETOF order_customer AS $$
+																									  SELECT *
+																									  FROM order_customer;
+																									$$ LANGUAGE SQL;
+
+
+																									CREATE FUNCTION return_power_supply() RETURNS SETOF power_supply AS $$
+																									  SELECT *
+																									  FROM power_supply;
+																									$$ LANGUAGE SQL;
+
+
+																									CREATE FUNCTION return_ram() RETURNS SETOF ram AS $$
+																									  SELECT *
+																									  FROM ram;
+																									$$ LANGUAGE SQL;
+
+
+																									CREATE FUNCTION return_ssd() RETURNS SETOF solid_state_drive AS $$
+																									  SELECT *
+																									  FROM solid_state_drive;
+																									$$ LANGUAGE SQL;');
+	PERFORM dblink_exec('hostaddr=127.0.0.1 port=5432 dbname=pc_shop user=user password=password', 'CREATE FUNCTION find_proc_with_sku(sku_arg INT) RETURNS SETOF processor AS $$
+																									  SELECT *
+																									  FROM processor
+																									  WHERE sku = sku_arg;
+																									$$ LANGUAGE SQL;
+
+																									CREATE FUNCTION find_cool_with_sku(sku_arg INT) RETURNS SETOF cooling AS $$
+																									  SELECT *
+																									  FROM cooling
+																									  WHERE sku = sku_arg;
+																									$$ LANGUAGE SQL;
+
+																									CREATE FUNCTION find_motherboard_with_sku(sku_arg INT) RETURNS SETOF motherboard AS $$
+																									  SELECT *
+																									  FROM motherboard
+																									  WHERE sku = sku_arg;
+																									$$ LANGUAGE SQL;
+
+																									CREATE FUNCTION find_power_supply_with_sku(sku_arg INT) RETURNS SETOF power_supply AS $$
+																									  SELECT *
+																									  FROM power_supply
+																									  WHERE sku = sku_arg;
+																									$$ LANGUAGE SQL;
+
+																									CREATE FUNCTION find_hdd_with_sku(sku_arg INT) RETURNS SETOF hard_disc_drive AS $$
+																									  SELECT *
+																									  FROM hard_disc_drive
+																									  WHERE sku = sku_arg;
+																									$$ LANGUAGE SQL;
+
+																									CREATE FUNCTION find_ssd_with_sku(sku_arg INT) RETURNS SETOF solid_state_drive AS $$
+																									  SELECT *
+																									  FROM solid_state_drive
+																									  WHERE sku = sku_arg;
+																									$$ LANGUAGE SQL;
+
+																									CREATE FUNCTION find_case_pc_with_sku(sku_arg INT) RETURNS SETOF case_pc AS $$
+																									  SELECT *
+																									  FROM case_pc
+																									  WHERE sku = sku_arg;
+																									$$ LANGUAGE SQL;
+
+																									CREATE FUNCTION find_ram_with_sku(sku_arg INT) RETURNS SETOF ram AS $$
+																									  SELECT *
+																									  FROM ram
+																									  WHERE sku = sku_arg;
+																									$$ LANGUAGE SQL;
+
+																									CREATE FUNCTION find_gpu_with_sku(sku_arg INT) RETURNS SETOF graphics_card AS $$
+																									  SELECT *
+																									  FROM graphics_card
+																									  WHERE sku = sku_arg;
+																									$$ LANGUAGE SQL;');
+	PERFORM dblink_exec('hostaddr=127.0.0.1 port=5432 dbname=pc_shop user=user password=password', 'CREATE PROCEDURE delete_with_sku_proc(sku_arg INT)
+																										LANGUAGE SQL
+																										AS $$
+																										DELETE FROM processor
+																										WHERE processor.sku = sku_arg;
+																										$$;
+
+																										CREATE PROCEDURE delete_with_sku_cool(sku_arg INT)
+																										LANGUAGE SQL
+																										AS $$
+																										DELETE FROM cooling
+																										WHERE cooling.sku = sku_arg;
+																										$$;
+
+																										CREATE PROCEDURE delete_with_sku_motherboard(sku_arg INT)
+																										LANGUAGE SQL
+																										AS $$
+																										DELETE FROM motherboard
+																										WHERE motherboard.sku = sku_arg;
+																										$$;
+
+																										CREATE PROCEDURE delete_with_sku_power_supply(sku_arg INT)
+																										LANGUAGE SQL
+																										AS $$
+																										DELETE FROM power_supply
+																										WHERE power_supply.sku = sku_arg;
+																										$$;
+
+																										CREATE PROCEDURE delete_with_sku_gpu(sku_arg INT)
+																										LANGUAGE SQL
+																										AS $$
+																										DELETE FROM graphics_card
+																										WHERE graphics_card.sku = sku_arg;
+																										$$;
+
+																										CREATE PROCEDURE delete_with_sku_ram(sku_arg INT)
+																										LANGUAGE SQL
+																										AS $$
+																										DELETE FROM ram
+																										WHERE ram.sku = sku_arg;
+																										$$;
+
+																										CREATE PROCEDURE delete_with_sku_hdd(sku_arg INT)
+																										LANGUAGE SQL
+																										AS $$
+																										DELETE FROM hard_disc_drive
+																										WHERE hard_disc_drive.sku = sku_arg;
+																										$$;
+
+																										CREATE PROCEDURE delete_with_sku_ssd(sku_arg INT)
+																										LANGUAGE SQL
+																										AS $$
+																										DELETE FROM solid_state_drive
+																										WHERE solid_state_drive.sku = sku_arg;
+																										$$;
+
+																										CREATE PROCEDURE delete_with_sku_case_pc(sku_arg INT)
+																										LANGUAGE SQL
+																										AS $$
+																										DELETE FROM case_pc
+																										WHERE case_pc.sku = sku_arg;
+																										$$;');
+	PERFORM dblink_exec('hostaddr=127.0.0.1 port=5432 dbname=pc_shop user=user password=password', 'CREATE PROCEDURE change_status_complete_order(order_id_arg INT)
+																									LANGUAGE SQL
+																									AS $$
+																										UPDATE order_customer
+																										SET status = ''complete''
+																										WHERE order_id = order_id_arg;
+																									$$;
+
+
+																									CREATE PROCEDURE change_status_cancel_order(order_id_arg INT, proc_sku_arg INT, cool_sku_arg INT, ram_sku_arg INT, ram_amount_arg INT, motherboard_sku_arg INT, graphics_card_sku_arg INT, hdd_sku_arg INT,
+																													ssd_sku_arg INT, power_supply_sku_arg INT, case_pc_sku_arg INT)
+																									LANGUAGE SQL
+																									AS $$
+																										UPDATE order_customer
+																										SET status = ''cancel''
+																										WHERE order_id = order_id_arg;
+
+																										UPDATE processor
+																										SET amount = amount + 1
+																										WHERE processor.sku = proc_sku_arg;
+
+																										UPDATE cooling
+																										SET amount = amount + 1
+																										WHERE cooling.sku = cool_sku_arg;
+
+																										UPDATE ram
+																										SET amount = amount + ram_amount_arg
+																										WHERE ram.sku = ram_sku_arg;
+
+																										UPDATE motherboard
+																										SET amount = amount + 1
+																										WHERE motherboard.sku = motherboard_sku_arg;
+																										
+																										UPDATE graphics_card
+																										SET amount = amount + 1
+																										WHERE graphics_card.sku = graphics_card_sku_arg;
+																										
+																										UPDATE hard_disc_drive
+																										SET amount = amount + 1
+																										WHERE hard_disc_drive.sku = hdd_sku_arg;
+
+																										UPDATE solid_state_drive
+																										SET amount = amount + 1
+																										WHERE solid_state_drive.sku = ssd_sku_arg;
+
+																										UPDATE power_supply
+																										SET amount = amount + 1
+																										WHERE power_supply.sku = power_supply_sku_arg;
+
+																										UPDATE case_pc
+																										SET amount = amount + 1
+																										WHERE case_pc.sku = case_pc_sku_arg;
+																									$$;');
+	PERFORM dblink_exec('hostaddr=127.0.0.1 port=5432 dbname=pc_shop user=user password=password', 'CREATE FUNCTION return_sku_with_order_id(order_id_arg INT) RETURNS SETOF record AS $$
+																									  SELECT proc_sku, cool_sku, ram_sku, ram_amount, motherboard_sku, graphics_card_sku, hdd_sku, ssd_sku, power_supply_sku, case_pc_sku
+																									  FROM order_customer
+																									  WHERE order_customer.order_id = order_id_arg;
+																									  $$ LANGUAGE SQL;');
+	PERFORM dblink_exec('hostaddr=127.0.0.1 port=5432 dbname=pc_shop user=user password=password', 'CREATE OR REPLACE FUNCTION is_available_order(order_id_arg INT) RETURNS INT
+																									AS $$
+																									BEGIN
+																										IF EXISTS (SELECT 1 FROM order_customer WHERE order_id = order_id_arg) THEN
+																											IF EXISTS (SELECT 1 FROM order_customer WHERE status = ''in progress'' AND order_id = order_id_arg) THEN
+																												return 1;
+																											ELSE
+																												return 0;
+																											END IF;
+																										ELSE
+																											return 0;
+																										END IF;
+																									END
+																									$$ LANGUAGE plpgsql;');																								  
+END IF;
+
+END
+$func$ LANGUAGE plpgsql;
+
+SELECT create_db();

@@ -1,0 +1,12 @@
+CREATE OR REPLACE FUNCTION is_exists()
+  RETURNS void AS
+$func$
+	BEGIN
+IF EXISTS (SELECT 1 FROM pg_database WHERE datname = 'pc_shop') THEN
+   return 0;
+ELSE
+   return 1;
+END IF;
+
+END
+$func$ LANGUAGE plpgsql;
