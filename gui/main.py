@@ -3,6 +3,7 @@ import tkinter
 import tkinter.messagebox as mb
 
 from sqlalchemy import create_engine
+from sqlalchemy.orm import Session
 
 default_pg_login = 'user'
 default_pg_passwd = 'password'
@@ -11,8 +12,7 @@ default_pg_port = '5432'
 default_pg_db_name = 'pc_shop'
 pg_url = f'postgresql://' \
          f'{default_pg_login}:{default_pg_passwd}@{default_pg_host}:{default_pg_port}/{default_pg_db_name}'
-god_url = f'postgresql://' \
-         f'{default_pg_login}:{default_pg_passwd}@{default_pg_host}:{default_pg_port}/god'
+god_url = f'postgresql://{default_pg_login}:{default_pg_passwd}@{default_pg_host}:{default_pg_port}/god'
 db_connected = f'Connected to {pg_url}'
 db_not_connected = f'Connection with {pg_url} is lost.'
 default_width = 1280
@@ -90,6 +90,15 @@ def validate(new_value):
     return new_value == "" or new_value.isnumeric()
 
 
+def num_in_list(number, list_numbers):
+    print(number)
+    print(list_numbers)
+    for i in list_numbers:
+        if str(number) in str(i):
+            return True
+    return False
+
+
 class App(Tk):
     def __init__(self):
         super().__init__()
@@ -108,8 +117,32 @@ class App(Tk):
                                         bg=default_button_bg_color, highlightthickness=0)
         self.sku_entry = Entry(font=default_font, background=additional_color_1, foreground=default_info_win_color,
                                width=4)
+        self.customer_comment_entry = Entry(font=default_font, background=additional_color_1,
+                                            foreground=default_info_win_color, width=30)
         self.customer_phone_entry = Entry(font=default_font, background=additional_color_1,
                                           foreground=default_info_win_color, width=11)
+        self.customer_comment_text = Text(font=default_font, width=17, height=1, bg=default_info_win_color,
+                                          fg=default_info_font_color, wrap=tkinter.WORD, bd=0)
+        self.customer_first_name_entry = Entry(font=default_font, background=additional_color_1,
+                                               foreground=default_info_win_color, width=11)
+        self.customer_last_name_entry = Entry(font=default_font, background=additional_color_1,
+                                              foreground=default_info_win_color, width=11)
+        self.customer_first_name_entry.insert(tkinter.INSERT, 'First name')
+        self.customer_last_name_entry.insert(tkinter.INSERT, 'Last name')
+
+        self.order_id_entry = Entry(font=default_font, background=additional_color_1,
+                                    foreground=default_info_win_color, width=10)
+        self.order_id_text = Text(font=default_font, width=17, height=1, bg=default_info_win_color,
+                                  fg=default_info_font_color, wrap=tkinter.WORD, bd=0)
+        self.order_id_text.insert(tkinter.INSERT, 'Order ID:')
+        self.order_id_text.configure(state='disabled')
+
+        self.is_new_customer = tkinter.IntVar()
+        self.new_customer_checkbox = Checkbutton(text='New customer', font=default_font,
+                                                 background=default_button_bg_color,
+                                                 variable=self.is_new_customer,
+                                                 activebackground=default_button_bg_color,
+                                                 onvalue=1, offvalue=0, command=self.update_first_last_name_entry)
         self.customer_phone_text = Text(font=default_font, width=15, height=1, bg=default_info_win_color,
                                         fg=default_info_font_color, wrap=tkinter.WORD, bd=0)
         self.sku_text = Text(font=default_font, width=4, height=1, bg=default_info_win_color,
@@ -142,6 +175,26 @@ class App(Tk):
                                        compound='center', foreground=default_font_color, border=0,
                                        background=default_button_bg_color, activebackground=default_button_bg_color,
                                        activeforeground=default_active_font_color, font=default_button_font)
+        self.complete_cancel_button = Button(text='Complete/cancel order', command=self.complete_cancel_order_menu,
+                                             image=self.button_image, compound='center',
+                                             foreground=default_font_color,
+                                             border=0,
+                                             background=default_button_bg_color,
+                                             activebackground=default_button_bg_color,
+                                             activeforeground=default_active_font_color, font=default_button_font)
+        self.complete_order_button = Button(text='Complete', command=self.complete_order,
+                                            image=self.button_image, compound='center',
+                                            foreground=default_font_color, border=0,
+                                            background=default_button_bg_color,
+                                            activebackground=default_button_bg_color,
+                                            activeforeground=default_active_font_color,
+                                            font=default_button_font)
+        self.cancel_order_button = Button(text='Cancel', command=self.cancel_order,
+                                          image=self.button_image, compound='center',
+                                          foreground=default_font_color, border=0,
+                                          background=default_button_bg_color,
+                                          activebackground=default_button_bg_color,
+                                          activeforeground=default_active_font_color, font=default_button_font)
         self.actions_with_db_button = Button(text='Actions with DB', command=self.create_or_drop_db_menu,
                                              image=self.button_image, compound='center',
                                              foreground=default_font_color,
@@ -376,7 +429,7 @@ class App(Tk):
     def select_case(self):
         data = my_cursor.execute(f'''SELECT * FROM return_case_pc();''')
         output = []
-        columns = ['SKU', 'Brand', 'Model', 'Form factor', 'GPU lengh',
+        columns = ['SKU', 'Brand', 'Model', 'Form factor', 'GPU length',
                    'Price', 'Amount']
         output.append(columns)
         for i in data:
@@ -461,6 +514,8 @@ class App(Tk):
         self.buttons_list.append(self.new_order_button)
         self.actions_with_db_button.place(x=340, y=520)
         self.buttons_list.append(self.actions_with_db_button)
+        self.complete_cancel_button.place(x=660, y=520)
+        self.buttons_list.append(self.complete_cancel_button)
         self.clearing_tables_button.place(x=340, y=620)
         self.buttons_list.append(self.clearing_tables_button)
         self.exit_button.place(x=1120, y=620)
@@ -468,6 +523,41 @@ class App(Tk):
         self.background_label.place(x=0, y=0, relwidth=1, relheight=1)
         self.place_output_window('')
         self.button_background.place(x=0, y=450)
+
+    def complete_order(self):
+        session = Session(my_engine)
+        order_id = self.order_id_entry.get()
+        print(order_id)
+        print(type(order_id))
+        if order_id.isdigit() and session.execute(f'CALL is_available_order({int(order_id)})') == 1:
+            session.execute(f'''CALL change_status_complete_order({int(order_id)});''')
+            self.place_output_window('Status was changed!')
+        else:
+            mb.showinfo('Information', message='Order with this ID does not exists or it\'s status not \'in progress\'')
+        session.commit()
+        session.close()
+
+    def cancel_order(self):
+        pass
+
+    def complete_cancel_order_menu(self):
+        for button in self.buttons_list:
+            button.place_forget()
+        self.buttons_list = []
+        self.go_to_main_menu_button.place(x=1120, y=620)
+        self.buttons_list.append(self.go_to_main_menu_button)
+        self.show_order_button.place(x=640, y=520)
+        self.buttons_list.append(self.show_order_button)
+
+        self.order_id_text.place(x=330, y=535)
+        self.buttons_list.append(self.order_id_text)
+        self.order_id_entry.place(x=330, y=560)
+        self.buttons_list.append(self.order_id_entry)
+
+        self.complete_order_button.place(x=20, y=520)
+        self.buttons_list.append(self.complete_order_button)
+        self.cancel_order_button.place(x=20, y=620)
+        self.buttons_list.append(self.cancel_order_button)
 
     def clear_tables_menu(self):
         for button in self.buttons_list:
@@ -515,16 +605,25 @@ class App(Tk):
             checkbox_list[i].place(x=30, y=i*40 + 40)
 
     def clear_chosen_tables(self):
+        session = Session(my_engine)
         for i in range(9):
             table = self.checkbox_values[i].get()
             if table == 1:
                 query = f'CALL clear_{names_of_tables[i]}();'
-                my_cursor.execute(query)
+                session.execute(query)
+        self.main_menu()
+        self.place_output_window('Chosen tables was cleared!')
+        session.flush()
+        session.commit()
+        session.close()
 
     def clear_all_tables(self):
-        self.place_output_window('All tables was cleared.')
+        session = Session(my_engine)
         query = f'''CALL clear_all_tables();'''
-        my_cursor.execute(query)
+        session.execute(query)
+        session.commit()
+        session.close()
+        self.place_output_window('All tables was cleared.')
 
     def create_or_drop_db_menu(self):
         for button in self.buttons_list:
@@ -536,6 +635,14 @@ class App(Tk):
         self.buttons_list.append(self.drop_db_button)
         self.go_to_main_menu_button.place(x=1120, y=620)
         self.buttons_list.append(self.go_to_main_menu_button)
+
+    def update_first_last_name_entry(self):
+        if self.is_new_customer.get() == 0:
+            self.customer_first_name_entry.configure(state='disabled')
+            self.customer_last_name_entry.configure(state='disabled')
+        else:
+            self.customer_first_name_entry.configure(state='normal')
+            self.customer_last_name_entry.configure(state='normal')
 
     def show_new_order_menu(self):
         self.place_output_window(' Choose components:\n\n Processor\n\n Motherboard\n\n Graphics card\n\n RAM\t\t\t\t\t'
@@ -558,6 +665,24 @@ class App(Tk):
         self.customer_phone_entry.place(x=1150, y=480)
         self.buttons_list.append(self.customer_phone_entry)
 
+        self.customer_comment_text.insert(tkinter.INSERT, 'Customer comment:')
+        self.customer_comment_text.configure(state='disabled')
+        self.customer_comment_text.place(x=820, y=531)
+        self.buttons_list.append(self.customer_comment_text)
+
+        self.new_customer_checkbox.place(x=820, y=480)
+        self.buttons_list.append(self.new_customer_checkbox)
+
+        self.customer_comment_entry.place(x=980, y=530)
+        self.buttons_list.append(self.customer_comment_entry)
+
+        self.update_first_last_name_entry()
+        self.customer_first_name_entry.place(x=820, y=580)
+        self.buttons_list.append(self.customer_first_name_entry)
+
+        self.customer_last_name_entry.place(x=1000, y=580)
+        self.buttons_list.append(self.customer_last_name_entry)
+
         self.combo_boxes = []
         self.components_dict = {}
         for i in range(9):
@@ -565,8 +690,9 @@ class App(Tk):
             output = []
             for el in data:
                 value = list(el)
-                output.append(value)
-                self.components_dict[value[0]] = value
+                if value[-1] > 0:
+                    output.append(value)
+                    self.components_dict[value[0]] = value
             make_list_of_str(output)
             self.combo_boxes.append(ttk.Combobox(self, font=default_font, values=output, width=106, state='readonly'))
             self.combo_boxes[i].place(x=150, y=68 + i*38)
@@ -669,6 +795,7 @@ class App(Tk):
 
     def new_order(self):
         sku_list = []
+        customers_list = list(my_cursor.execute('SELECT * FROM return_customer();'))
         for i in range(10):
             sku_list.append(int(self.combo_boxes[i].get()[0:4]))
         customer_number = self.customer_phone_entry.get()
@@ -695,10 +822,21 @@ class App(Tk):
             # cooling socket != proc socket
             # proc tdp > cool tdp
             mb.showinfo('Information', message='The selected components are not compatible.')
+        elif self.is_new_customer.get() == 0 and not num_in_list(customer_number, customers_list):
+            mb.showinfo('Information', message='There is no such phone number in '
+                                               'the list of customers. Add new customer!')
         else:
-            my_cursor.execute(f'''CALL insert_order_customer(\'{customer_number}\', {sku_list[0]}, {sku_list[4]}, 
+            session = Session(my_engine)
+            if self.is_new_customer.get() == 1:
+                session.execute(f'''CALL insert_customer(\'{customer_number}\', 
+                                \'{self.customer_first_name_entry.get()}\', 
+                                \'{self.customer_last_name_entry.get()}\');''')
+            session.execute(f'''CALL insert_order_customer(\'{customer_number}\', {sku_list[0]}, {sku_list[4]}, 
                               {sku_list[3]}, {sku_list[9]}, {sku_list[1]}, {sku_list[2]}, {sku_list[7]}, {sku_list[6]}, 
-                              {sku_list[5]}, {sku_list[8]}, \'commentaries\', \'in progress\');''')
+                              {sku_list[5]}, {sku_list[8]}, \'{self.customer_comment_entry.get()}\', 
+                              \'in progress\');''')
+            session.commit()
+            session.close()
             self.main_menu()
             self.place_output_window('New order was created!')
 
